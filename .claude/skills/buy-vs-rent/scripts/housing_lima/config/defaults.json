@@ -1,0 +1,32 @@
+{
+  "_nota": "Valores referenciales para Lima a nov-2026. Verificar antes de usar en decisiones reales.",
+  "busqueda": {
+    "max_fuentes": 10,
+    "max_busquedas": 5
+  },
+  "tipo_cambio": 3.75,
+  "uit": 5500,
+  "perfil": {
+    "precio_vivienda": 450000,
+    "alquiler_mensual": 2500,
+    "area_m2": 90,
+    "distrito": "Santiago de Surco",
+    "cuota_inicial_pct": 0.20,
+    "tea_hipoteca": 0.088,
+    "plazo_anios": 20,
+    "horizonte_anios": 10,
+    "apreciacion_anual": 0.03,
+    "crecimiento_alquiler": 0.03,
+    "rentabilidad_alternativa": 0.05,
+    "inflacion": 0.02,
+    "mantenimiento_pct": 0.01,
+    "predial_pct": 0.004,
+    "arbitrios_mensual": 80,
+    "gastos_cierre_pct": 0.015,
+    "aplica_alcabala": true,
+    "comision_venta_pct": 0.03,
+    "seguro_desgravamen_mensual": 0.00028,
+    "seguro_inmueble_anual": 0.0003,
+    "bono": 0
+  }
+}

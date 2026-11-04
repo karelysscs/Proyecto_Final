@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aviso inmobiliario (una fila de listings.csv)",
+  "type": "object",
+  "required": ["fuente", "url", "distrito", "operacion", "precio", "moneda", "area_m2"],
+  "properties": {
+    "id":             {"type": "string"},
+    "fuente":         {"type": "string", "description": "Portal o medio, p.ej. Urbania, Adondevivir, BCRP"},
+    "url":            {"type": "string"},
+    "fecha_consulta": {"type": "string", "description": "AAAA-MM-DD"},
+    "distrito":       {"type": "string"},
+    "operacion":      {"enum": ["venta", "alquiler"]},
+    "precio":         {"type": "number", "minimum": 0},
+    "moneda":         {"enum": ["PEN", "USD"]},
+    "area_m2":        {"type": "number", "minimum": 10},
+    "dormitorios":    {"type": "integer"},
+    "banos":          {"type": "integer"},
+    "estacionamiento":{"type": "integer"},
+    "notas":          {"type": "string"}
+  }
+}

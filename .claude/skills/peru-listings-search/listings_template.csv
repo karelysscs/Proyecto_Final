@@ -1,0 +1,3 @@
+id,fuente,url,fecha_consulta,distrito,operacion,precio,moneda,area_m2,dormitorios,banos,estacionamiento,notas
+ejemplo-1,Urbania,https://urbania.pe/buscar/venta-de-departamentos-en-santiago-de-surco--lima--lima,2026-11-04,Santiago de Surco,venta,125000,USD,90,3,2,1,EJEMPLO - borrar antes de usar
+ejemplo-2,Urbania,https://urbania.pe/buscar/alquiler-de-departamentos-en-santiago-de-surco--lima--lima,2026-11-04,Santiago de Surco,alquiler,2600,PEN,88,3,2,1,EJEMPLO - borrar antes de usar

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Perfil comprador/inquilino (Lima)",
+  "type": "object",
+  "required": ["precio_vivienda", "alquiler_mensual"],
+  "properties": {
+    "precio_vivienda":            {"type": "number", "minimum": 30000},
+    "alquiler_mensual":           {"type": "number", "minimum": 200},
+    "area_m2":                    {"type": "number", "minimum": 10},
+    "distrito":                   {"type": "string"},
+    "cuota_inicial_pct":          {"type": "number", "minimum": 0.075, "maximum": 1},
+    "tea_hipoteca":               {"type": "number", "minimum": 0, "maximum": 0.3},
+    "plazo_anios":                {"type": "integer", "minimum": 5, "maximum": 30},
+    "horizonte_anios":            {"type": "integer", "minimum": 1, "maximum": 40},
+    "apreciacion_anual":          {"type": "number", "minimum": -0.1, "maximum": 0.2},
+    "crecimiento_alquiler":       {"type": "number", "minimum": -0.1, "maximum": 0.2},
+    "rentabilidad_alternativa":   {"type": "number", "minimum": 0, "maximum": 0.3},
+    "inflacion":                  {"type": "number", "minimum": -0.05, "maximum": 0.2},
+    "mantenimiento_pct":          {"type": "number", "minimum": 0, "maximum": 0.05},
+    "predial_pct":                {"type": "number", "minimum": 0, "maximum": 0.02},
+    "arbitrios_mensual":          {"type": "number", "minimum": 0},
+    "gastos_cierre_pct":          {"type": "number", "minimum": 0, "maximum": 0.1},
+    "aplica_alcabala":            {"type": "boolean"},
+    "comision_venta_pct":         {"type": "number", "minimum": 0, "maximum": 0.1},
+    "seguro_desgravamen_mensual": {"type": "number", "minimum": 0, "maximum": 0.005},
+    "seguro_inmueble_anual":      {"type": "number", "minimum": 0, "maximum": 0.01},
+    "bono":                       {"type": "number", "minimum": 0}
+  }
+}
