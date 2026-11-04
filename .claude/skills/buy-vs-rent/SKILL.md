@@ -33,7 +33,8 @@ siempre a través del launcher `scripts/hl.py` (no importes módulos sueltos).
 | `hl.py sensitivity perfil.json` | Tornado de sensibilidad + alquiler de equilibrio |
 | `hl.py explain perfil.json` | Informe en español (Markdown) |
 | `hl.py listings listings.csv` | Resumen por distrito y control del límite de fuentes |
-| `hl.py app` | Lanza el dashboard Streamlit |
+| `hl.py app` | Lanza el dashboard Streamlit del modelo |
+| `hl.py resultados` | Lanza el dashboard de resultados de búsqueda (bitácora, fuentes, avisos) |
 
 Detalles de supuestos y fórmulas: ver `reference.md`.
 

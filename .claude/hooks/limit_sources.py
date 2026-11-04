@@ -10,6 +10,7 @@ Uso manual:  python limit_sources.py --reset   |   python limit_sources.py --est
 """
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
@@ -56,12 +57,21 @@ def main():
 
     estado = leer_estado()
     s = estado.setdefault(sesion, {"urls": [], "busquedas": 0})
+    s.setdefault("eventos", [])
+    s.setdefault("inicio", datetime.now().isoformat(timespec="seconds"))
+
+    def registrar(tipo, valor, resultado):
+        s["eventos"].append({"hora": datetime.now().isoformat(timespec="seconds"),
+                             "tipo": tipo, "valor": valor, "resultado": resultado})
+        guardar_estado(estado)
 
     if herramienta == "WebFetch":
         url = (entrada.get("url") or "").strip()
         if url in s["urls"]:
-            return 0  # releer una fuente ya contada no consume cupo
+            registrar("fuente", url, "repetida")  # releer una fuente ya contada no consume cupo
+            return 0
         if len(s["urls"]) >= max_fuentes:
+            registrar("fuente", url, "bloqueada")
             print(
                 f"Límite de {max_fuentes} fuentes alcanzado (modo clase). "
                 "Trabaja con las fuentes ya consultadas: " + ", ".join(s["urls"]),
@@ -69,8 +79,11 @@ def main():
             )
             return 2
         s["urls"].append(url)
+        registrar("fuente", url, "permitida")
     elif herramienta == "WebSearch":
+        consulta = entrada.get("query", "")
         if s["busquedas"] >= max_busquedas:
+            registrar("busqueda", consulta, "bloqueada")
             print(
                 f"Límite de {max_busquedas} búsquedas alcanzado (modo clase). "
                 "Usa los resultados que ya tienes.",
@@ -78,8 +91,7 @@ def main():
             )
             return 2
         s["busquedas"] += 1
-
-    guardar_estado(estado)
+        registrar("busqueda", consulta, "permitida")
     return 0
 
 

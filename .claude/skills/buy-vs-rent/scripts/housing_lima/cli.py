@@ -86,7 +86,7 @@ def cmd_listings(a):
 
 
 def cmd_app(a):
-    app = Path(__file__).resolve().parent / "app" / "app.py"
+    app = Path(__file__).resolve().parent / "app" / a.archivo
     return subprocess.call([sys.executable, "-m", "streamlit", "run", str(app)])
 
 
@@ -115,8 +115,11 @@ def main(argv=None):
     s.add_argument("--json", action="store_true")
     s.set_defaults(fn=cmd_listings)
 
-    s = sub.add_parser("app")
-    s.set_defaults(fn=cmd_app)
+    s = sub.add_parser("app", help="dashboard del modelo comprar vs alquilar")
+    s.set_defaults(fn=cmd_app, archivo="app.py")
+
+    s = sub.add_parser("resultados", help="dashboard de los resultados de búsqueda del agente")
+    s.set_defaults(fn=cmd_app, archivo="resultados.py")
 
     for flujo in (sys.stdout, sys.stderr):
         if hasattr(flujo, "reconfigure"):

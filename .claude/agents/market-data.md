@@ -18,4 +18,7 @@ Entregable:
 2. Un resumen breve: filas de venta/alquiler, fuentes usadas (n/10), mediana S/ por m² de
    venta y de alquiler del distrito (`hl.py listings data/listings.csv`), y limitaciones.
 
+Al terminar, indica que los resultados se pueden ver con
+`python .claude/skills/buy-vs-rent/scripts/hl.py resultados`.
+
 Nunca inventes avisos ni precios.

@@ -40,7 +40,12 @@ python .claude/skills/buy-vs-rent/scripts/hl.py explain data/perfil.json
 python .claude/skills/peru-safe-investments/scripts/index_returns.py --horizonte 10
 pip install streamlit pandas matplotlib
 python .claude/skills/buy-vs-rent/scripts/hl.py app
+python .claude/skills/buy-vs-rent/scripts/hl.py resultados
 ```
+
+`hl.py resultados` abre el dashboard con lo que encontró el agente: la bitácora de
+búsquedas y fuentes (con su cupo de 10), los avisos, el resumen por distrito y la
+recomendación que sale de esos datos.
 
 ## Cambiar el límite de fuentes
 

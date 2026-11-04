@@ -16,7 +16,23 @@ Se abre en http://localhost:8501. En la barra lateral se mueven los supuestos y 
 recalcula en vivo; abajo se puede subir `data/listings.csv` para ver el resumen por distrito
 y cuántas de las 10 fuentes permitidas se usaron.
 
-## Secciones actuales
+## Dashboard de resultados de búsqueda
+
+```
+python .claude/skills/buy-vs-rent/scripts/hl.py resultados
+```
+
+Archivo: `housing_lima/app/resultados.py`. Lee `data/listings.csv` y la bitácora del hook
+(`.claude/hooks/.estado_fuentes.json`) y muestra:
+
+1. KPIs: fuentes usadas n/10, búsquedas n/5, avisos de venta y alquiler.
+2. **Bitácora del agente**: cada búsqueda y URL con hora y si fue permitida, repetida o bloqueada.
+3. **Fuentes**: avisos aportados por cada URL, con enlace.
+4. **Avisos**: tabla filtrable y dispersión área vs precio.
+5. **Por distrito**: medianas S/ por m², rendimiento bruto y PER.
+6. **Llevar al modelo**: precio y alquiler estimados para un área y la recomendación.
+
+## Secciones actuales del dashboard del modelo (`app.py`)
 
 1. Métricas: recomendación, ventaja de comprar, cuota, alquiler de equilibrio.
 2. Línea de patrimonio acumulado (comprar vs alquilar).
