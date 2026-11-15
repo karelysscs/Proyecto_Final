@@ -1,56 +1,144 @@
-# Skill_Buy_Rent
+# 🏠 Techito Propio
 
-Agente de Claude Code que responde **"¿me conviene comprar o alquilar vivienda en Lima?"**
-combinando datos de mercado, costo de oportunidad y un modelo financiero.
+> **Ayudamos a quienes alquilan en Lima a decidir si les conviene comprar o seguir alquilando, con precios reales del mercado, tasas en vivo del BCRP y un modelo financiero completo.**
 
-> Modo clase: la búsqueda web está limitada a **10 fuentes** y **5 búsquedas** por sesión.
+**Demo:** https://techito-propio.streamlit.app · **Video de respaldo:** _[pendiente: link al video de 60–90 s]_
 
-## Estructura
+---
+
+## 1. One-liner
+
+Hacemos la cuenta de "¿compro o alquilo?" para inquilinos de Lima, usando avisos reales de Urbania, tasas del BCRP y un modelo de patrimonio a N años.
+
+## 2. Founder
+
+| | |
+|---|---|
+| _[foto: docs/founder.jpg]_ | **_[Tu nombre]_** — _[una línea: carrera, ciclo y por qué te importa este problema]_ |
+
+Soy la única founder. Cubro cada frente con agentes de IA:
+- **Producto:** definí el flujo (distrito → tamaño → inicial → horizonte → recomendación) a partir de 3 perfiles de usuario.
+- **Ingeniería:** Claude Code escribió la mayor parte del código bajo mi dirección. Yo revisé y validé el modelo financiero.
+- **Datos:** un agente con skills propias (`.claude/skills/`) busca avisos y los normaliza en un CSV con su fuente.
+- **Diseño y ventas:** la interfaz es Streamlit. El canal de ventas es B2B (sección 7).
+
+## 3. Problema
+
+**Quién lo sufre:** profesionales de 25 a 45 años que alquilan un departamento en distritos de Lima Moderna y Lima Centro (Miraflores, Surco, Jesús María, San Miguel), con ahorros para una cuota inicial y una oferta de crédito hipotecario en la mano.
+
+**Cuánto les cuesta:** es la decisión financiera más grande de su vida. En un depa de 90 m² en Surco (~S/ 546,000), equivocarse puede significar **más de S/ 70,000 de patrimonio** en 10 años (ver la demo). Además:
+- Pagan costos que no sabían que existían: alcabala (3 % sobre el exceso de 10 UIT), gastos de cierre, seguros, predial y mantenimiento.
+- No cuentan el **costo de oportunidad** de la cuota inicial, que en un depósito a plazo rinde ~4.6 % al año (BCRP).
+
+**Cómo lo resuelven hoy:**
+1. **"A ojo" o con la frase "alquilar es botar la plata".**
+2. **El simulador del banco**, que solo calcula la cuota y tiene incentivo para que compres.
+3. **Un Excel propio** que compara cuota vs. alquiler y omite apreciación, costos de cierre y costo de oportunidad.
+4. **El vendedor de la inmobiliaria**, con conflicto de interés.
+
+**Evidencia:** [docs/research/](docs/research/) tiene 3 perfiles de usuario. ⚠️ **Son perfiles hipotéticos, no conversaciones reales.** Los construí por falta de tiempo en el sprint y están marcados así en cada archivo. El siguiente paso es validarlos con usuarios reales.
+
+## 4. Solución e insight
+
+**Qué construí:** una web app donde eliges distrito y tamaño, y en segundos ves:
+- **La recomendación** (comprar o alquilar) y la diferencia de patrimonio al final del horizonte.
+- **El alquiler de equilibrio:** cuánto tendría que costar el alquiler para que comprar convenga.
+- **Un mapa** que compara tu mismo caso en los 4 distritos.
+- **Qué supuesto pesa más** (análisis de sensibilidad).
+- **Los avisos reales** usados como fuente, con enlace a cada uno.
+
+**Insight:** la pregunta correcta no es "¿la cuota es parecida al alquiler?", sino **"¿con cuánto patrimonio termino en N años en cada camino?"**. En Lima la respuesta **cambia por distrito**. Con los datos de hoy, un depa de 90 m² en **Surco conviene comprarlo** y uno similar en **San Miguel conviene alquilarlo**, porque allá el alquiler es barato frente al precio de venta (PER más alto). Ningún simulador de banco ni portal inmobiliario te muestra eso, porque su negocio es que compres.
+
+## 5. Why now
+
+- **Datos abiertos y en vivo:** el API del BCRP publica la TEA hipotecaria promedio (7.47 % en oct-2026) y las tasas de depósitos sin costo ni registro.
+- **Agentes de código:** hace tres años, juntar scraping, un modelo financiero, un API y un mapa requería un equipo. Hoy una persona con Claude Code lo construye en días, y un agente puede mantener los datos actualizados.
+- **Tasas a la baja:** la tasa hipotecaria promedio bajó de 8.13 % a 7.83 % en los 12 meses a febrero de 2026 ([BCRP, nota informativa 16/03/2026](https://www.bcrp.gob.pe/docs/Transparencia/Notas-Informativas/2026/nota-informativa-2026-03-16.pdf)). Más personas se están haciendo la pregunta ahora.
+
+## 6. Demo
+
+- **URL pública:** https://techito-propio.streamlit.app
+- **En local:**
+  ```bash
+  pip install -r requirements.txt
+  streamlit run streamlit_app.py
+  ```
+- **Capturas:** [docs/capturas/](docs/capturas/) _(pendiente)_
+- **Arquitectura:** [docs/arquitectura.md](docs/arquitectura.md)
+
+```mermaid
+flowchart LR
+    U[Usuario] -->|distrito, m², inicial, horizonte| APP[streamlit_app.py]
+    URB[(Urbania<br/>avisos venta/alquiler)] -->|agente + skill<br/>peru-listings-search| CSV[data/listings.csv]
+    CSV --> MER[listings.py<br/>mediana S/ por m²]
+    BCRP[(API BCRP)] -->|TEA hipotecaria,<br/>depósito a plazo, TC| B[bcrp.py]
+    MER --> MOD[model.py + analysis.py<br/>simulación mensual]
+    B --> MOD
+    APP --> MOD
+    MOD --> OUT[Recomendación · patrimonio ·<br/>mapa Folium · sensibilidad · fuentes]
+```
+
+**Modelos y APIs, y por qué:**
+- **API del BCRP** (series `PN07848NM`, `PN07815NM`, `PD04640PD`): es la fuente oficial, gratuita y sin clave, y se actualiza sola. Si no responde, la app usa valores por defecto y lo indica.
+- **Modelo financiero propio en Python** (`model.py`): cuota francesa con TEA, alcabala, seguros, predial, mantenimiento, comisión de venta y costo de oportunidad, mes a mes. No uso un LLM para el cálculo porque el resultado debe ser **exacto y auditable**.
+- **Folium:** el mapa de distritos, en Python y gratis.
+- **Sin LLM en producción:** el costo por usuario es casi cero. Los agentes de IA trabajan en el *backoffice*: recolectan y normalizan los datos.
+
+## 7. Modelo de negocio
+
+| Plan | Quién paga | Precio | Qué recibe |
+|---|---|---|---|
+| **Gratis** | Nadie (el usuario) | S/ 0 | Recomendación, mapa y avisos |
+| **Informe Premium** | El usuario | **S/ 19** pago único | PDF con su caso, escenarios y checklist para el banco |
+| **Lead calificado** | Bancos e inmobiliarias | **S/ 40 por lead** | Contacto (con consentimiento) de alguien a quien comprar sí le conviene, con su presupuesto y distrito |
+
+**Costo por usuario (margen de contribución):**
+- Servidor: Streamlit Community Cloud gratis; en escala, ~US$ 20/mes en Render o similar para miles de usuarios.
+- APIs: BCRP gratis. Sin tokens de LLM por consulta.
+- Actualizar los datos: una corrida mensual del agente, menos de US$ 2 en tokens.
+- **Costo marginal por usuario ≈ S/ 0.01.** El margen de contribución del Informe y del lead es prácticamente el 100 % del precio.
+
+## 8. Herramientas del curso
+
+| Herramienta | Sesión | Dónde está | Por qué |
+|---|---|---|---|
+| **Scraping y APIs** | 03 | `.claude/skills/peru-listings-search/`, `data/listings.csv` | Precios reales de venta y alquiler por distrito |
+| **API del BCRP** | 04 | `.claude/skills/buy-vs-rent/scripts/housing_lima/bcrp.py` | Tasas y tipo de cambio oficiales, en vivo |
+| **Dashboards** | 05 | `streamlit_app.py` | La app que usa el cliente |
+| **Mapas con Folium** | 06 | `streamlit_app.py` (pestaña "Mapa de distritos") | Comparar el mismo caso entre distritos |
+| **Agentes y skills de Claude Code** | 11, 16 | `.claude/agents/`, `.claude/skills/`, `.claude/hooks/limit_sources.py` | Agente que recolecta datos de mercado con un tope de fuentes |
+
+## 9. Qué hizo el agente
+
+Usé **Claude Code** como co-founder técnico:
+- **Generó** el motor financiero (`housing_lima/`), los skills, los subagentes y el hook que limita las fuentes.
+- **Recolectó** los 96 avisos de Urbania con el navegador integrado y los normalizó en `data/listings.csv`.
+- **Encontró y conectó** las series del API del BCRP (`bcrp.py`).
+- **Escribió** `streamlit_app.py` con el mapa, la configuración de despliegue y este README.
+- **Yo** definí el problema, los distritos, los supuestos del modelo y el modelo de negocio, y revisé que los números tuvieran sentido.
+
+---
+
+## Estructura del repo
 
 ```
-Skill_Buy_Rent/
-├── CLAUDE.md                     instrucciones del orquestador
+Proyecto_Final/
+├── streamlit_app.py              app pública (Streamlit Community Cloud)
+├── requirements.txt
+├── data/listings.csv             96 avisos reales (Urbania, 15/11/2026)
+├── docs/                         arquitectura, capturas, research/
 ├── .claude/
-│   ├── settings.json             registra el hook que limita las fuentes
-│   ├── hooks/limit_sources.py    bloquea WebFetch/WebSearch al pasar el tope
-│   ├── skills/
-│   │   ├── buy-vs-rent/          SKILL.md, reference.md, scripts/hl.py (launcher)
-│   │   │   └── scripts/housing_lima/   motor: model, explain, analysis, listings, intake, cli, schemas/, config/, app/
-│   │   ├── peru-listings-search/ SKILL.md, reference.md, listings_template.csv, scripts/check_listings.py
-│   │   ├── peru-safe-investments/SKILL.md, reference.md, scripts/index_returns.py
-│   │   ├── rent-vs-buy-model/    SKILL.md, reference.md
-│   │   └── streamlit-dashboard/  SKILL.md, reference.md
-│   └── agents/                   market-data, opportunity-cost, financial-analysis, streamlit-builder
-└── data/                         perfil.json, listings.csv, informe.md (salidas)
+│   ├── skills/buy-vs-rent/scripts/housing_lima/   motor: model, analysis, bcrp, listings, explain
+│   ├── skills/                   peru-listings-search, peru-safe-investments, rent-vs-buy-model, streamlit-dashboard
+│   ├── agents/                   market-data, opportunity-cost, financial-analysis, streamlit-builder
+│   └── hooks/limit_sources.py    tope de fuentes para el agente de búsqueda
+└── CLAUDE.md                     instrucciones del agente orquestador
 ```
 
-## Uso con Claude Code
+**Uso con Claude Code (backoffice):** abre la carpeta en Claude Code y pide, por ejemplo,
+_"¿Me conviene comprar un depa de 90 m² en Surco? Tengo 20 % de inicial y pienso quedarme 10 años."_
+El agente actualiza los datos, corre el modelo y redacta un informe.
 
-Abre la carpeta en Claude Code y pide, por ejemplo:
+**Limitaciones:** los precios son de oferta (no de cierre) y en m² totales; hay 12 avisos por distrito y tipo de operación. Es una herramienta educativa, no asesoría financiera personalizada.
 
-> ¿Me conviene comprar un depa de 90 m² en Santiago de Surco o seguir alquilando? Tengo 20 % de inicial y pienso quedarme 10 años.
-
-## Uso directo del motor (sin agente)
-
-```bash
-python .claude/skills/buy-vs-rent/scripts/hl.py intake --plantilla > data/perfil.json
-python .claude/skills/buy-vs-rent/scripts/hl.py run data/perfil.json
-python .claude/skills/buy-vs-rent/scripts/hl.py sensitivity data/perfil.json
-python .claude/skills/buy-vs-rent/scripts/hl.py explain data/perfil.json
-python .claude/skills/peru-safe-investments/scripts/index_returns.py --horizonte 10
-pip install streamlit pandas matplotlib
-python .claude/skills/buy-vs-rent/scripts/hl.py app
-python .claude/skills/buy-vs-rent/scripts/hl.py resultados
-```
-
-`hl.py resultados` abre el dashboard con lo que encontró el agente: la bitácora de
-búsquedas y fuentes (con su cupo de 10), los avisos, el resumen por distrito y la
-recomendación que sale de esos datos.
-
-## Cambiar el límite de fuentes
-
-Edita `busqueda.max_fuentes` y `busqueda.max_busquedas` en
-`.claude/skills/buy-vs-rent/scripts/housing_lima/config/defaults.json`.
-Reinicia el contador con `python .claude/hooks/limit_sources.py --reset`.
-
-Ejercicio educativo; no es asesoría financiera.
+Licencia MIT.
