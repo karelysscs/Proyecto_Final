@@ -80,7 +80,7 @@ def perfil(**cambios):
     datos = {**base, "uit": config()["uit"], "distrito": ss.distrito, "precio_vivienda": ss.precio,
              "alquiler_mensual": ss.alquiler, "area_m2": ss.area, "cuota_inicial_pct": ss.inicial,
              "horizonte_anios": ss.horizonte, "plazo_anios": ss.plazo, "tea_hipoteca": ss.tea,
-             "rentabilidad_alternativa": RENT_BCRP, "aplica_alcabala": True}
+             "rentabilidad_alternativa": RENT_BCRP, "aplica_alcabala": ss.get("alcabala", True)}
     datos.update(cambios)
     return Perfil.desde_dict(datos)
 
@@ -145,36 +145,67 @@ def escribir(texto):
         yield palabra + " "
 
 
-# ------------------------------------------------------------------ marca
-TEJA, AMBAR, CREMA, TINTA, SALVIA = "#D9583B", "#F2A541", "#FFF9F2", "#2E2A3A", "#5B8E7D"
+# ------------------------------------------------------------------ marca (estética "Lima de noche")
+TEJA, AMBAR, CREMA, TINTA, SALVIA, CIAN = "#FF6B3D", "#FFB547", "#EDE9F7", "#EDE9F7", "#3DDBD9", "#3DDBD9"
 ASSETS = RAIZ / "assets"
-st.logo(str(ASSETS / "logo.svg"), size="large", icon_image=str(ASSETS / "icono.svg"))
+st.logo(str(ASSETS / "logo_noche.svg"), size="large", icon_image=str(ASSETS / "icono.svg"))
 st.markdown(f"""
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
+  .stApp {{
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgba(255,107,61,.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(61,219,217,.12), transparent 60%),
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 40px 40px,
+      #0B0A14;
+  }}
   .block-container {{ padding-top: 2.2rem; }}
-  h1, h2, h3 {{ color: {TINTA}; }}
-  .tp-hero h1 {{ font-size: 2.6rem; line-height: 1.1; margin: 0 0 .4rem 0; }}
-  .tp-hero h1 span {{ color: {TEJA}; }}
-  .tp-hero p {{ font-size: 1.08rem; color: #5a5368; margin: 0 0 .8rem 0; }}
-  .tp-chip {{ display: inline-block; background: #FCEBDD; color: {TEJA}; border: 1px solid #F1D2BD;
-             border-radius: 999px; padding: .2rem .7rem; margin: 0 .3rem .3rem 0; font-size: .85rem; font-weight: 600; }}
+  h1, h2, h3, h4, .tp-paso, .tp-chip {{ font-family: 'Space Grotesk', sans-serif !important; letter-spacing: -.01em; }}
+  .tp-hero h1 {{ font-size: 2.4rem; line-height: 1.1; margin: 0 0 .4rem 0; color: {CREMA}; }}
+  .tp-hero h1 span {{ background: linear-gradient(90deg, {TEJA}, {AMBAR}, {CIAN}); -webkit-background-clip: text;
+                     background-clip: text; color: transparent; filter: drop-shadow(0 0 18px rgba(255,107,61,.35)); }}
+  .tp-hero p {{ font-size: 1.05rem; color: #B5AECB; margin: 0 0 .8rem 0; }}
+  .tp-chip {{ display: inline-block; background: rgba(255,255,255,.05); color: {AMBAR}; border: 1px solid rgba(255,181,71,.35);
+             border-radius: 999px; padding: .2rem .75rem; margin: 0 .3rem .3rem 0; font-size: .82rem; font-weight: 600;
+             backdrop-filter: blur(6px); }}
   .tp-pasos {{ display: flex; gap: .5rem; margin: .6rem 0 1.2rem 0; }}
   .tp-paso {{ flex: 1; text-align: center; padding: .55rem; border-radius: 12px; font-weight: 600;
-             background: #FCEBDD; color: #9a8f86; border: 1px solid #F1D2BD; }}
-  .tp-paso.activo {{ background: {TEJA}; color: {CREMA}; border-color: {TEJA}; }}
-  .tp-paso.hecho {{ background: #F7D9C9; color: {TEJA}; }}
-  div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 14px; background: #FFFDF9; }}
-  .stButton button, .stLinkButton a {{ border-radius: 999px; font-weight: 600; }}
-  div[data-testid="stMetricValue"] {{ color: {TEJA}; }}
+             background: rgba(255,255,255,.04); color: #7D7697; border: 1px solid #2C2748; }}
+  .tp-paso.activo {{ background: linear-gradient(90deg, {TEJA}, {AMBAR}); color: #160F0A; border-color: transparent;
+                    box-shadow: 0 0 22px rgba(255,107,61,.45); }}
+  .tp-paso.hecho {{ color: {CIAN}; border-color: rgba(61,219,217,.4); }}
+  div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 16px; background: rgba(255,255,255,.035);
+       border-color: rgba(255,255,255,.09) !important; backdrop-filter: blur(10px);
+       transition: border-color .2s, box-shadow .2s; }}
+  div[data-testid="stVerticalBlockBorderWrapper"]:hover {{ border-color: rgba(255,107,61,.55) !important;
+       box-shadow: 0 0 24px rgba(255,107,61,.15); }}
+  .stButton button, .stLinkButton a, .stDownloadButton button {{ border-radius: 999px; font-weight: 600; }}
+  .stButton button[kind="primary"], .stDownloadButton button[kind="primary"] {{
+       background: linear-gradient(90deg, {TEJA}, {AMBAR}); color: #160F0A; border: none;
+       box-shadow: 0 0 18px rgba(255,107,61,.35); }}
+  .stButton button[kind="primary"]:hover {{ box-shadow: 0 0 28px rgba(255,181,71,.6); }}
+  div[data-testid="stMetricValue"] {{ color: {AMBAR}; font-family: 'Space Grotesk', sans-serif;
+       text-shadow: 0 0 16px rgba(255,181,71,.35); }}
   .tp-badge {{ display: inline-block; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 700; }}
-  .tp-badge.comprar {{ background: #DCEBE4; color: #2F6B57; }}
-  .tp-badge.alquilar {{ background: #FDE9C8; color: #9A5B00; }}
-  .tp-mini {{ font-size: .9rem; color: #5a5368; margin: .2rem 0 .5rem 0; }}
-  .tp-mini b {{ color: {TINTA}; }}
-  .tp-confianza {{ display: flex; gap: 1rem; flex-wrap: wrap; background: #FCEBDD; border-radius: 14px;
-                  padding: .8rem 1.1rem; margin-top: 1.2rem; font-size: .9rem; color: #5a5368; }}
+  .tp-badge.comprar {{ background: rgba(61,219,217,.12); color: {CIAN}; border: 1px solid rgba(61,219,217,.45); }}
+  .tp-badge.alquilar {{ background: rgba(255,181,71,.12); color: {AMBAR}; border: 1px solid rgba(255,181,71,.45); }}
+  .tp-mini {{ font-size: .9rem; color: #B5AECB; margin: .2rem 0 .5rem 0; }}
+  .tp-mini b {{ color: {CREMA}; }}
+  .tp-confianza {{ display: flex; gap: 1rem; flex-wrap: wrap; background: rgba(255,255,255,.035);
+                  border: 1px solid rgba(255,255,255,.08); border-radius: 16px;
+                  padding: .8rem 1.1rem; margin-top: 1.2rem; font-size: .9rem; color: #B5AECB; }}
   .tp-confianza div {{ flex: 1; min-width: 220px; }}
-  .tp-confianza b {{ color: {TINTA}; }}
+  .tp-confianza b {{ color: {CREMA}; }}
+  .tp-confianza a {{ color: {CIAN}; }}
+  .tp-futuro {{ display: flex; gap: 1rem; }}
+  .tp-futuro div {{ flex: 1; border-radius: 16px; padding: .9rem 1rem; background: rgba(255,255,255,.04);
+                   border: 1px solid rgba(255,255,255,.1); }}
+  .tp-futuro .c {{ border-color: rgba(255,107,61,.5); box-shadow: 0 0 20px rgba(255,107,61,.15); }}
+  .tp-futuro .a {{ border-color: rgba(61,219,217,.5); box-shadow: 0 0 20px rgba(61,219,217,.12); }}
+  .tp-futuro small {{ color: #B5AECB; }}
+  .tp-futuro b {{ font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; display: block; }}
+  .tp-futuro .c b {{ color: {TEJA}; }} .tp-futuro .a b {{ color: {CIAN}; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -190,7 +221,7 @@ if ss.paso == 1:
   <span class="tp-chip">🔓 Cálculo abierto</span>
 </div>""", unsafe_allow_html=True)
     with h_img:
-        st.image(str(ASSETS / "hero.svg"), width=230)
+        st.image(str(ASSETS / "hero_noche.svg"), width=260)
 
 pasos = ["① Dónde vivir", "② Tu depa", "③ Tu asesora"]
 st.markdown('<div class="tp-pasos">' + "".join(
@@ -221,15 +252,16 @@ if ss.paso == 1:
                 unsafe_allow_html=True)
     col_mapa, col_cards = st.columns([5, 6], gap="medium")
     with col_mapa:
-        mapa = folium.Map(location=(-12.105, -77.04), zoom_start=12, scrollWheelZoom=False)
+        mapa = folium.Map(location=(-12.105, -77.04), zoom_start=12, scrollWheelZoom=False,
+                          tiles="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                          attr="Esri, HERE, Garmin, © OpenStreetMap contributors")
         for d, info in DISTRITOS.items():
             fila = resumen.loc[d]
             elegido = d == ss.distrito
             folium.CircleMarker(
                 info["coord"], radius=fila["venta_m2_mediana"] / 250,
-                color=TEJA if elegido else SALVIA, fill=True, fill_color=TEJA if elegido else AMBAR,
-                fill_opacity=0.6,
-                weight=4 if elegido else 2, tooltip=d,
+                color=AMBAR, fill=True, fill_color=TEJA, fill_opacity=0.55,
+                weight=3, tooltip=d,
                 popup=folium.Popup(f"<b>{d}</b><br>Venta: S/ {fila['venta_m2_mediana']:,.0f}/m²<br>"
                                    f"Alquiler: S/ {fila['alquiler_m2_mediana']:,.0f}/m² al mes", max_width=220),
             ).add_to(mapa)
@@ -272,7 +304,40 @@ elif ss.paso == 2:
 
     lista, panel = st.columns([6, 5], gap="large")
     with lista:
-        with st.container(height=520, border=False):
+        modo = st.segmented_control("¿Qué depa analizamos?", ["🏘️ Avisos del mercado", "✍️ Tengo mi propio depa"],
+                                    default="🏘️ Avisos del mercado", key="modo_depa", label_visibility="collapsed")
+    if modo == "✍️ Tengo mi propio depa":
+        with lista, st.container(border=True):
+            st.markdown("**Cuéntame del depa que tienes en mente**  \n<span class='tp-mini'>Uno que viste en un "
+                        "portal, en un proyecto o que te ofrecieron. Lo comparamos con el mercado de "
+                        f"{d}.</span>", unsafe_allow_html=True)
+            c1, c2 = st.columns([3, 2])
+            monto = c1.number_input("Precio", 30_000, 20_000_000, int(ss.get("mi_monto", 450_000)), 5_000, key="mi_monto")
+            moneda = c2.radio("Moneda", ["S/", "US$"], horizontal=True, key="mi_moneda")
+            c3, c4, c5 = st.columns(3)
+            m2 = c3.number_input("Área (m²)", 20, 1_000, int(ss.get("mi_m2", 90)), 1, key="mi_m2")
+            dorm = c4.number_input("Dormitorios", 1, 8, int(ss.get("mi_dorm", 3)), 1, key="mi_dorm")
+            banos = c5.number_input("Baños", 1, 8, int(ss.get("mi_banos", 2)), 1, key="mi_banos")
+            estreno = st.checkbox("Es de estreno (primera venta: no paga alcabala)", key="mi_estreno")
+            link = st.text_input("Link del aviso (opcional)", key="mi_link", placeholder="https://…")
+            tc = ind["tipo_cambio"]["valor"]
+            precio_pen = monto * tc if moneda == "US$" else monto
+            m2_mercado = fila["venta_m2_mediana"]
+            dif = precio_pen / m2 / m2_mercado - 1
+            st.markdown(f"<span class='tp-mini'>= <b>{soles(precio_pen)}</b>"
+                        + (f" (TC {tc:.3f}, BCRP)" if moneda == "US$" else "")
+                        + f" · <b>{soles(precio_pen / m2)}/m²</b>, un <b>{abs(dif):.0%} "
+                        f"{'más caro' if dif > 0 else 'más barato'}</b> que la mediana de {d} "
+                        f"({soles(m2_mercado)}/m²).</span>", unsafe_allow_html=True)
+            if dif > 0.25:
+                st.warning("Está bastante por encima del mercado del distrito: vale la pena negociar el precio.", icon="💬")
+            elif dif < -0.25:
+                st.info("Está muy por debajo del mercado: revisa bien el estado del depa y su partida en SUNARP.", icon="🔎")
+        casa = {"precio_pen": float(precio_pen), "area_m2": float(m2), "dormitorios": dorm, "banos": banos,
+                "aviso": link.strip()}
+        ss.alcabala = not estreno
+    else:
+        with lista, st.container(height=470, border=False):
             cols = st.columns(2)
             for i, v in ventas.iterrows():
                 elegido = v["id"] == ss.aviso_id
@@ -285,8 +350,9 @@ elif ss.paso == 2:
                               type="primary" if elegido else "secondary", use_container_width=True,
                               on_click=lambda i=v["id"]: ss.update(aviso_id=i))
                     b2.link_button("Ver ↗", v["aviso"], use_container_width=True)
+        casa = ventas[ventas["id"] == ss.aviso_id].iloc[0].to_dict()
+        ss.alcabala = True
 
-    casa = ventas[ventas["id"] == ss.aviso_id].iloc[0]
     area = float(casa["area_m2"])
     alq_estimado = round(fila["alquiler_m2_mediana"] * area, -1)
 
@@ -428,9 +494,20 @@ else:
         b.metric("Alquiler", soles(ss.alquiler) + "/mes")
         serie = pd.DataFrame(r["serie"]).set_index("anio")[["patrimonio_comprador", "patrimonio_inquilino"]]
         serie.columns = ["Si compras", "Si alquilas e inviertes"]
+        anio = st.slider("🚀 Viaja al futuro: elige un año", int(serie.index.min()), int(serie.index.max()),
+                         int(serie.index.max()), format="Año %d", key="viaje")
+        ano_cal = time.localtime().tm_year + anio
+        pc, pa = serie.loc[anio, "Si compras"], serie.loc[anio, "Si alquilas e inviertes"]
+        st.markdown(f"""<div class="tp-futuro">
+  <div class="c"><small>En {ano_cal}, si compras</small><b>{soles(pc)}</b><small>depa menos deuda</small></div>
+  <div class="a"><small>En {ano_cal}, si alquilas</small><b>{soles(pa)}</b><small>lo que invertiste</small></div>
+</div>""", unsafe_allow_html=True)
+        st.caption(("🏠 En ese año vas ganando comprando" if pc > pa else "🔑 En ese año vas ganando alquilando")
+                   + f" por {soles(abs(pc - pa))}.")
         st.markdown("**Tu patrimonio año a año**")
-        st.line_chart(serie, y_label="S/", x_label="Año", height=280)
-        st.link_button("Ver el aviso del depa elegido ↗", ss.casa_url, use_container_width=True)
+        st.line_chart(serie, y_label="S/", x_label="Año", height=280, color=[TEJA, CIAN])
+        if ss.casa_url:
+            st.link_button("Ver el aviso del depa elegido ↗", ss.casa_url, use_container_width=True)
         with st.container(border=True):
             st.markdown("**📄 Tu informe personal**  \n<span class='tp-mini'>Tu caso, los números clave, la "
                         "conversación con Techi y un checklist para ir al banco. "

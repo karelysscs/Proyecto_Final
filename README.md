@@ -64,6 +64,8 @@ En el camino ves:
 | Un resultado estático | **Asesora "Techi"** que conversa y recalcula ante cada pregunta |
 | No sabías si el banco te prestaría | **"¿Me alcanza?"**: cuota frente a tu sueldo y precio máximo que puedes pagar |
 | Sin entregable | **Informe descargable** con checklist para ir al banco (el producto Premium) |
+| Solo el perfil de ejemplo | **"Tengo mi propio depa"**: pones precio (S/ o US$), m² y si es de estreno, y te dice si está caro frente al distrito |
+| Un número final | **"Viaja al futuro"**: eliges un año y ves tu patrimonio en cada camino |
 
 ## 5. Why now
 
