@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Techito Propio">
+  <defs>
+    <linearGradient id="techo" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF6B3D"/><stop offset="1" stop-color="#FFB547"/>
+    </linearGradient>
+    <linearGradient id="casa" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFB547"/><stop offset="1" stop-color="#FF6B3D"/>
+    </linearGradient>
+    <filter id="brillo" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="2" y="2" width="92" height="92" rx="24" fill="#17142B" stroke="#2C2748" stroke-width="2"/>
+  <g filter="url(#brillo)">
+    <path d="M18 48 L48 20 L78 48" fill="none" stroke="url(#techo)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M64 25 h8 v13" fill="none" stroke="url(#techo)" stroke-width="5" stroke-linecap="round"/>
+    <rect x="29" y="45" width="38" height="32" rx="4" fill="url(#casa)"/>
+    <rect x="42" y="57" width="12" height="20" rx="2" fill="#0B0A14"/>
+    <circle cx="51" cy="68" r="1.6" fill="#3DDBD9"/>
+    <rect x="33" y="51" width="7" height="7" rx="1.5" fill="#3DDBD9" opacity=".9"/>
+    <rect x="56" y="51" width="7" height="7" rx="1.5" fill="#3DDBD9" opacity=".9"/>
+  </g>
+</svg>

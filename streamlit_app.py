@@ -8,6 +8,7 @@ Recorrido guiado en 3 pasos:
   3. Tu asesora hipotecaria -> veredicto conversacional + preguntas que recalculan el
                                modelo en vivo con tasas del API del BCRP.
 """
+import base64
 import sys
 import time
 from pathlib import Path
@@ -160,9 +161,16 @@ st.markdown(f"""
       linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 40px 40px,
       #0B0A14;
   }}
-  .block-container {{ padding-top: 2.2rem; }}
+  .block-container {{ padding-top: 3.8rem; }}
   h1, h2, h3, h4, .tp-paso, .tp-chip {{ font-family: 'Space Grotesk', sans-serif !important; letter-spacing: -.01em; }}
-  .tp-hero h1 {{ font-size: 2.4rem; line-height: 1.1; margin: 0 0 .4rem 0; color: {CREMA}; }}
+  .tp-marca {{ display: flex; align-items: center; justify-content: center; gap: .9rem; margin: 0 0 .5rem 0; }}
+  .tp-marca img {{ width: 64px; height: 64px; filter: drop-shadow(0 0 18px rgba(255,107,61,.45)); }}
+  .tp-nombre {{ font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; line-height: 1;
+               letter-spacing: -.03em; color: {CREMA}; text-shadow: 0 0 28px rgba(237,233,247,.18); }}
+  .tp-nombre span {{ background: linear-gradient(90deg, {TEJA}, {AMBAR}); -webkit-background-clip: text;
+                    background-clip: text; color: transparent; }}
+  .tp-hero {{ text-align: center; max-width: 820px; margin: 0 auto; }}
+  .tp-hero h1 {{ font-size: 1.9rem; line-height: 1.15; margin: 0 0 .4rem 0; padding: 0; color: {CREMA} !important; }}
   .tp-hero h1 span {{ background: linear-gradient(90deg, {TEJA}, {AMBAR}, {CIAN}); -webkit-background-clip: text;
                      background-clip: text; color: transparent; filter: drop-shadow(0 0 18px rgba(255,107,61,.35)); }}
   .tp-hero p {{ font-size: 1.05rem; color: #B5AECB; margin: 0 0 .8rem 0; }}
@@ -209,19 +217,22 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+LOGO_B64 = base64.b64encode((ASSETS / "icono_noche.svg").read_bytes()).decode()
+st.markdown(f"""
+<div class="tp-marca">
+  <img src="data:image/svg+xml;base64,{LOGO_B64}" alt="Logo de Techito Propio">
+  <div class="tp-nombre">Techito <span>Propio</span></div>
+</div>""", unsafe_allow_html=True)
+
 if ss.paso == 1:
-    h_txt, h_img = st.columns([4, 1], gap="medium", vertical_alignment="center")
-    with h_txt:
-        st.markdown("""
+    st.markdown("""
 <div class="tp-hero">
-  <h1 style="font-size:2.1rem">¿Compro o alquilo? <span>Te lo decimos con números.</span></h1>
+  <h1>¿Compro o alquilo? <span>Te lo decimos con números.</span></h1>
   <p>Avisos reales, tasas en vivo del BCRP y un modelo financiero completo. Gratis, en 1 minuto
   y sin que nadie te quiera vender nada.</p>
   <span class="tp-chip">🏘️ 96 avisos reales</span><span class="tp-chip">🏦 Tasas BCRP en vivo</span>
   <span class="tp-chip">🔓 Cálculo abierto</span>
 </div>""", unsafe_allow_html=True)
-    with h_img:
-        st.image(str(ASSETS / "hero_noche.svg"), width=260)
 
 pasos = ["① Dónde vivir", "② Tu depa", "③ Tu asesora"]
 st.markdown('<div class="tp-pasos">' + "".join(
