@@ -117,22 +117,31 @@ st.markdown(f"""
   div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 14px; background: #FFFDF9; }}
   .stButton button, .stLinkButton a {{ border-radius: 999px; font-weight: 600; }}
   div[data-testid="stMetricValue"] {{ color: {TEJA}; }}
+  .tp-badge {{ display: inline-block; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 700; }}
+  .tp-badge.comprar {{ background: #DCEBE4; color: #2F6B57; }}
+  .tp-badge.alquilar {{ background: #FDE9C8; color: #9A5B00; }}
+  .tp-mini {{ font-size: .9rem; color: #5a5368; margin: .2rem 0 .5rem 0; }}
+  .tp-mini b {{ color: {TINTA}; }}
+  .tp-confianza {{ display: flex; gap: 1rem; flex-wrap: wrap; background: #FCEBDD; border-radius: 14px;
+                  padding: .8rem 1.1rem; margin-top: 1.2rem; font-size: .9rem; color: #5a5368; }}
+  .tp-confianza div {{ flex: 1; min-width: 220px; }}
+  .tp-confianza b {{ color: {TINTA}; }}
 </style>
 """, unsafe_allow_html=True)
 
 if ss.paso == 1:
-    h_txt, h_img = st.columns([3, 2], gap="large", vertical_alignment="center")
+    h_txt, h_img = st.columns([4, 1], gap="medium", vertical_alignment="center")
     with h_txt:
         st.markdown("""
 <div class="tp-hero">
-  <h1>¿Compro o alquilo?<br><span>Te lo decimos con números.</span></h1>
-  <p>Tu asesora para decidir si comprar o seguir alquilando en Lima: avisos reales,
-  tasas en vivo del BCRP y un modelo financiero completo. Gratis y sin que nadie te quiera vender nada.</p>
+  <h1 style="font-size:2.1rem">¿Compro o alquilo? <span>Te lo decimos con números.</span></h1>
+  <p>Avisos reales, tasas en vivo del BCRP y un modelo financiero completo. Gratis, en 1 minuto
+  y sin que nadie te quiera vender nada.</p>
   <span class="tp-chip">🏘️ 96 avisos reales</span><span class="tp-chip">🏦 Tasas BCRP en vivo</span>
-  <span class="tp-chip">🗺️ 4 distritos</span><span class="tp-chip">⏱️ 1 minuto</span>
+  <span class="tp-chip">🔓 Cálculo abierto</span>
 </div>""", unsafe_allow_html=True)
     with h_img:
-        st.image(str(ASSETS / "hero.svg"), use_container_width=True)
+        st.image(str(ASSETS / "hero.svg"), width=230)
 
 pasos = ["① Dónde vivir", "② Tu depa", "③ Tu asesora"]
 st.markdown('<div class="tp-pasos">' + "".join(
@@ -140,12 +149,30 @@ st.markdown('<div class="tp-pasos">' + "".join(
     for i, p in enumerate(pasos)) + "</div>", unsafe_allow_html=True)
 
 # ================================================================== PASO 1
+def elegir_distrito(d):
+    ss.distrito = d
+    ss.aviso_id = None
+    ir(2)
+
+
+@st.cache_data
+def adelanto(d, tea, rent):
+    """Veredicto de referencia por distrito: depa de 90 m², 20 % de inicial, 10 años."""
+    fila = resumen.loc[d]
+    pr = Perfil.desde_dict({**base, "uit": config()["uit"], "area_m2": 90, "tea_hipoteca": tea,
+                            "rentabilidad_alternativa": rent,
+                            "precio_vivienda": round(fila["venta_m2_mediana"] * 90, -3),
+                            "alquiler_mensual": round(fila["alquiler_m2_mediana"] * 90, -1)})
+    return pr.precio_vivienda, pr.alquiler_mensual, simular(pr)["recomendacion"]
+
+
 if ss.paso == 1:
-    st.subheader("¿Dónde te gustaría vivir?")
-    st.write("Toca un distrito en el mapa o elige una tarjeta. Los precios salen de avisos reales publicados hoy.")
-    col_mapa, col_cards = st.columns([3, 2], gap="large")
+    st.markdown("#### ¿Dónde te gustaría vivir?  \n"
+                "<span class='tp-mini'>Toca un círculo del mapa o una tarjeta y pasamos al siguiente paso.</span>",
+                unsafe_allow_html=True)
+    col_mapa, col_cards = st.columns([5, 6], gap="medium")
     with col_mapa:
-        mapa = folium.Map(location=(-12.108, -77.035), zoom_start=12)
+        mapa = folium.Map(location=(-12.105, -77.04), zoom_start=12, scrollWheelZoom=False)
         for d, info in DISTRITOS.items():
             fila = resumen.loc[d]
             elegido = d == ss.distrito
@@ -157,85 +184,88 @@ if ss.paso == 1:
                 popup=folium.Popup(f"<b>{d}</b><br>Venta: S/ {fila['venta_m2_mediana']:,.0f}/m²<br>"
                                    f"Alquiler: S/ {fila['alquiler_m2_mediana']:,.0f}/m² al mes", max_width=220),
             ).add_to(mapa)
-        salida = st_folium(mapa, height=460, use_container_width=True,
+        salida = st_folium(mapa, height=440, use_container_width=True,
                            returned_objects=["last_object_clicked_tooltip"], key="mapa_distritos")
         clic = (salida or {}).get("last_object_clicked_tooltip")
-        if clic in DISTRITOS and clic != ss.distrito:
-            ss.distrito = clic
-            ss.aviso_id = None
+        if clic in DISTRITOS and clic != ss.get("clic_previo"):  # evita re-disparar al volver al paso 1
+            ss.clic_previo = clic
+            elegir_distrito(clic)
             st.rerun()
     with col_cards:
-        for d, info in DISTRITOS.items():
-            fila = resumen.loc[d]
-            with st.container(border=True):
-                st.markdown(f"**{info['emoji']} {d}**" + ("  ✅" if d == ss.distrito else ""))
-                st.caption(info["frase"])
-                a, b, c = st.columns([2, 2, 1.4])
-                a.markdown(f"Venta  \n**{soles(fila['venta_m2_mediana'])}/m²**")
-                b.markdown(f"Alquiler  \n**{soles(fila['alquiler_m2_mediana'] * 90)}/mes**")
-                if c.button("Elegir", key=f"btn_{d}", type="primary" if d == ss.distrito else "secondary"):
-                    ss.distrito = d
-                    ss.aviso_id = None
-                    st.rerun()
-        st.caption("Alquiler referencial de un depa de 90 m².")
-    if ss.distrito:
-        st.button(f"Continuar con {ss.distrito} →", type="primary", on_click=ir, args=(2,))
+        cuadros = st.columns(2)
+        for i, (d, info) in enumerate(DISTRITOS.items()):
+            precio90, alq90, veredicto = adelanto(d, TEA_BCRP, RENT_BCRP)
+            with cuadros[i % 2].container(border=True):
+                st.markdown(f"**{info['emoji']} {d}**  \n<span class='tp-mini'>{info['frase']}</span>",
+                            unsafe_allow_html=True)
+                st.markdown(f"<div class='tp-mini'>Depa de 90 m²<br>Comprar <b>{soles(precio90)}</b><br>"
+                            f"Alquilar <b>{soles(alq90)}/mes</b></div>"
+                            f"<span class='tp-badge {veredicto}'>"
+                            f"{'✅ suele convenir COMPRAR' if veredicto == 'comprar' else '🔑 suele convenir ALQUILAR'}</span>",
+                            unsafe_allow_html=True)
+                corto = {"Santiago de Surco": "Surco"}.get(d, d)
+                st.button(f"Ver depas en {corto} →", key=f"btn_{d}", type="primary",
+                          use_container_width=True, on_click=elegir_distrito, args=(d,))
+        st.caption("Referencia con 20 % de inicial, 10 años y la tasa promedio del BCRP. "
+                   "En el siguiente paso lo ajustas a tu caso.")
 
 # ================================================================== PASO 2
 elif ss.paso == 2:
     d = ss.distrito
     fila = resumen.loc[d]
-    st.subheader(f"{DISTRITOS[d]['emoji']} Elige el depa que te gustaría comprar en {d}")
-    st.write("Estos son avisos reales en venta. Elige uno y lo comparamos con lo que pagarías por alquilar uno parecido.")
+    st.markdown(f"#### {DISTRITOS[d]['emoji']} ¿Qué depa te gustaría en {d}?  \n"
+                "<span class='tp-mini'>Avisos reales en venta. Elige uno y a la derecha lo comparamos con alquilar uno parecido.</span>",
+                unsafe_allow_html=True)
 
     ventas = df[(df["distrito"] == d) & (df["operacion"] == "venta")].sort_values("precio_pen").reset_index(drop=True)
     if ss.aviso_id is None:
         ss.aviso_id = ventas.loc[(ventas["area_m2"] - 90).abs().idxmin(), "id"]  # el más cercano a 90 m²
-    cols = st.columns(4)
-    for i, v in ventas.iterrows():
-        with cols[i % 4].container(border=True):
-            elegido = v["id"] == ss.aviso_id
-            st.markdown(f"**{soles(v['precio_pen'])}**" + ("  ✅" if elegido else ""))
-            st.caption(f"{v['area_m2']:.0f} m² · {v['dormitorios']} dorm. · {v['banos']} baños · "
-                       f"{soles(v['precio_m2'])}/m²")
-            b1, b2 = st.columns(2)
-            if b1.button("Elegir", key=f"av_{v['id']}", type="primary" if elegido else "secondary"):
-                ss.aviso_id = v["id"]
-                st.rerun()
-            b2.link_button("Ver", v["aviso"])
+
+    lista, panel = st.columns([6, 5], gap="large")
+    with lista:
+        with st.container(height=520, border=False):
+            cols = st.columns(2)
+            for i, v in ventas.iterrows():
+                elegido = v["id"] == ss.aviso_id
+                with cols[i % 2].container(border=True):
+                    st.markdown(f"**{soles(v['precio_pen'])}**" + ("  ✅" if elegido else "") +
+                                f"  \n<span class='tp-mini'>{v['area_m2']:.0f} m² · {v['dormitorios']} dorm. · "
+                                f"{v['banos']} baños · {soles(v['precio_m2'])}/m²</span>", unsafe_allow_html=True)
+                    b1, b2 = st.columns([3, 2])
+                    b1.button("Este me gusta" if not elegido else "Elegido", key=f"av_{v['id']}",
+                              type="primary" if elegido else "secondary", use_container_width=True,
+                              on_click=lambda i=v["id"]: ss.update(aviso_id=i))
+                    b2.link_button("Ver ↗", v["aviso"], use_container_width=True)
 
     casa = ventas[ventas["id"] == ss.aviso_id].iloc[0]
     area = float(casa["area_m2"])
     alq_estimado = round(fila["alquiler_m2_mediana"] * area, -1)
 
-    st.divider()
-    izq, der = st.columns(2, gap="large")
-    with izq:
-        st.markdown("### 🏠 Comprar")
-        st.metric("Precio del depa elegido", soles(casa["precio_pen"]), f"{area:.0f} m² · {casa['dormitorios']} dorm.",
-                  delta_color="off")
-        inicial = st.slider("¿Cuánto tienes de cuota inicial?", 7.5, 50.0, 20.0, 0.5, format="%.1f %%") / 100
-        st.caption(f"Equivale a {soles(casa['precio_pen'] * inicial)}")
-        plazo = st.select_slider("Plazo del crédito", options=[10, 15, 20, 25, 30], value=20,
-                                 format_func=lambda x: f"{x} años")
-        tea = st.slider("Tasa del crédito (TEA)", 5.0, 15.0, round(TEA_BCRP * 100, 2), 0.05, format="%.2f %%",
-                        help=f"Por defecto, el promedio de la banca según el BCRP ({ind['tea_hipoteca']['periodo']}).") / 100
-    with der:
-        st.markdown("### 🔑 Alquilar")
-        st.metric("Alquiler de un depa parecido", soles(alq_estimado) + "/mes",
-                  f"mediana de {int(fila['n_alquiler'])} avisos en {d}", delta_color="off")
-        ya_alquilo = st.toggle("Ya alquilo y quiero poner lo que pago")
-        alquiler = st.number_input("Alquiler mensual (S/)", 300, 50_000, int(alq_estimado), 50) if ya_alquilo else alq_estimado
-        horizonte = st.slider("¿Cuántos años piensas vivir ahí?", 3, 30, 10)
-        st.caption(f"Si no compras, tu inicial se invierte en un depósito a plazo al "
-                   f"{RENT_BCRP * 100:.2f} % anual (BCRP).")
-
-    ss.update({"precio": float(casa["precio_pen"]), "area": area, "alquiler": float(alquiler),
-               "inicial": inicial, "plazo": plazo, "tea": tea, "horizonte": horizonte,
-               "casa_url": casa["aviso"]})
-    n1, n2 = st.columns([1, 5])
-    n1.button("← Cambiar distrito", on_click=ir, args=(1,))
-    n2.button("Hablar con mi asesora →", type="primary", on_click=ir, args=(3,))
+    with panel, st.container(border=True):
+        st.markdown(f"**Tu elección:** {area:.0f} m² · {casa['dormitorios']} dorm. en {d}")
+        c_comp, c_alq = st.columns(2)
+        c_comp.metric("🏠 Comprarlo", soles(casa["precio_pen"]))
+        with c_alq:
+            ya_alquilo = st.toggle("Ya alquilo", help="Pon lo que pagas hoy en vez del estimado.")
+            if ya_alquilo:
+                alquiler = st.number_input("Tu alquiler (S/ al mes)", 300, 50_000, int(alq_estimado), 50)
+            else:
+                alquiler = alq_estimado
+                st.metric("🔑 Alquilar uno parecido", soles(alq_estimado) + "/mes",
+                          f"mediana de {int(fila['n_alquiler'])} avisos", delta_color="off")
+        inicial = st.slider("Tu cuota inicial", 7.5, 50.0, 20.0, 0.5, format="%.1f %%") / 100
+        st.caption(f"= {soles(casa['precio_pen'] * inicial)}. Si no compras, esa plata rinde "
+                   f"{RENT_BCRP * 100:.2f} % al año en un depósito a plazo (BCRP).")
+        horizonte = st.slider("¿Cuántos años vivirías ahí?", 3, 30, 10)
+        with st.expander("Ajustar el crédito"):
+            plazo = st.select_slider("Plazo", options=[10, 15, 20, 25, 30], value=20, format_func=lambda x: f"{x} años")
+            tea = st.slider("Tasa (TEA)", 5.0, 15.0, round(TEA_BCRP * 100, 2), 0.05, format="%.2f %%",
+                            help=f"Promedio de la banca según el BCRP ({ind['tea_hipoteca']['periodo']}).") / 100
+        ss.update({"precio": float(casa["precio_pen"]), "area": area, "alquiler": float(alquiler),
+                   "inicial": inicial, "plazo": plazo, "tea": tea, "horizonte": horizonte,
+                   "casa_url": casa["aviso"]})
+        st.button("Ver qué me conviene →", type="primary", use_container_width=True, on_click=ir, args=(3,))
+        st.button("← Cambiar distrito", use_container_width=True, on_click=ir, args=(1,))
 
 # ================================================================== PASO 3
 else:
@@ -309,8 +339,8 @@ else:
         preguntas = {"💰 ¿Y si doy más inicial?": "inicial", "📈 ¿Y si sube la tasa 1 punto?": "tasa",
                      "⏳ ¿Cuántos años debo quedarme?": "anios", "🏚️ ¿Y si el depa no sube de precio?": "precio",
                      "⚖️ ¿Qué alquiler haría que comprar convenga?": "equilibrio"}
-        bcols = st.columns(len(preguntas))
-        for (texto, clave), col in zip(preguntas.items(), bcols):
+        fila1, fila2 = st.columns(3), st.columns(2)
+        for (texto, clave), col in zip(preguntas.items(), list(fila1) + list(fila2)):
             if col.button(texto, key=f"q_{clave}", use_container_width=True):
                 ss.chat += ["YO::" + texto, respuesta(clave)]
                 ss.animar = 1
@@ -337,5 +367,20 @@ else:
     n1.button("← Cambiar depa", on_click=ir, args=(2,))
     n2.button("Empezar de nuevo", on_click=lambda: ss.update(paso=1, distrito=None, aviso_id=None, chat=[]))
 
-st.divider()
+st.markdown(f"""
+<div class="tp-confianza">
+  <div>📊 <b>Datos reales</b><br>96 avisos de Urbania (15/11/2026) y tasas del BCRP
+  ({ind['tea_hipoteca']['periodo']}).</div>
+  <div>🔓 <b>Cálculo abierto</b><br>Cualquiera puede revisar el modelo en
+  <a href="https://github.com/karelysscs/Proyecto_Final" target="_blank">GitHub</a>.</div>
+  <div>🔒 <b>No guardamos tus datos</b><br>Todo se calcula al momento; no pedimos nombre, correo ni DNI.</div>
+</div>""", unsafe_allow_html=True)
+with st.expander("¿Cómo calculamos?"):
+    st.markdown(
+        "Simulamos **mes a mes** dos caminos durante los años que vivirías ahí:\n"
+        "- **Comprar:** cuota inicial, crédito con cuota fija (TEA), seguros, predial, arbitrios, mantenimiento, "
+        "alcabala y gastos de cierre, y al final vender el depa (con comisión) a un precio que sube 3 % al año.\n"
+        "- **Alquilar:** pagas el alquiler (sube 3 % al año) e **inviertes** la cuota inicial y cada mes en que "
+        "alquilar sale más barato que la cuota, a la tasa de depósitos a plazo del BCRP.\n\n"
+        "Gana el camino con **más patrimonio al final**. Precio y alquiler son medianas de avisos reales del distrito.")
 st.caption("Techito Propio · herramienta educativa con supuestos simplificados; no es asesoría financiera personalizada.")
