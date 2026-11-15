@@ -14,7 +14,7 @@ Hacemos la cuenta de "¿compro o alquilo?" para inquilinos de Lima, usando aviso
 
 | | |
 |---|---|
-| _[foto: docs/founder.jpg]_ | **_[Tu nombre]_** — _[una línea: carrera, ciclo y por qué te importa este problema]_ |
+| <img src="docs/founder.webp" width="140" alt="Karelyss Collazos"> | **Karelyss Collazos**: estudiante de la Universidad del Pacífico (Data Science con Python, 2026-II). Quiero que la decisión financiera más grande de una persona se tome con números y no "a ojo". |
 
 Soy la única founder. Cubro cada frente con agentes de IA:
 - **Producto:** definí el flujo (distrito → tamaño → inicial → horizonte → recomendación) a partir de 3 perfiles de usuario.

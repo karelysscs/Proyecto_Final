@@ -1,4 +1,4 @@
-Nombre: [Tu nombre completo]
+Nombre: Karelyss Collazos
 Startup y one-liner: Techito Propio — Ayudamos a quienes alquilan en Lima a decidir si les conviene comprar o seguir alquilando, con precios reales del mercado, tasas en vivo del BCRP y un modelo financiero completo.
 Link del demo (URL pública, o "corre en local"): https://techito-propio.streamlit.app
 Link del repo: https://github.com/karelysscs/Proyecto_Final
