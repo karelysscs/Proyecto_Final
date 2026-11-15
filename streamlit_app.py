@@ -255,6 +255,8 @@ if ss.paso == 1:
         mapa = folium.Map(location=(-12.105, -77.04), zoom_start=12, scrollWheelZoom=False,
                           tiles="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
                           attr="Esri, HERE, Garmin, © OpenStreetMap contributors")
+        folium.TileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+                         attr="Esri", overlay=True, name="Etiquetas").add_to(mapa)
         for d, info in DISTRITOS.items():
             fila = resumen.loc[d]
             elegido = d == ss.distrito
