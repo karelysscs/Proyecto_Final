@@ -36,7 +36,7 @@ DISTRITOS = {
 }
 ASESORA = "🧑‍💼"
 
-st.set_page_config(page_title="Techito Propio · ¿Compro o alquilo?", page_icon="🏠", layout="wide")
+st.set_page_config(page_title="Techito Propio · ¿Compro o alquilo?", page_icon=str(RAIZ / "assets" / "icono.svg"), layout="wide")
 
 
 # ------------------------------------------------------------------ datos
@@ -96,12 +96,48 @@ def escribir(texto):
         yield palabra + " "
 
 
-# ------------------------------------------------------------------ encabezado
-st.markdown("# 🏠 Techito Propio")
-st.caption("Tu asesora para decidir si comprar o seguir alquilando en Lima, con avisos reales "
-           "y tasas en vivo del BCRP. Gratis y sin que nadie te quiera vender nada.")
+# ------------------------------------------------------------------ marca
+TEJA, AMBAR, CREMA, TINTA, SALVIA = "#D9583B", "#F2A541", "#FFF9F2", "#2E2A3A", "#5B8E7D"
+ASSETS = RAIZ / "assets"
+st.logo(str(ASSETS / "logo.svg"), size="large", icon_image=str(ASSETS / "icono.svg"))
+st.markdown(f"""
+<style>
+  .block-container {{ padding-top: 2.2rem; }}
+  h1, h2, h3 {{ color: {TINTA}; }}
+  .tp-hero h1 {{ font-size: 2.6rem; line-height: 1.1; margin: 0 0 .4rem 0; }}
+  .tp-hero h1 span {{ color: {TEJA}; }}
+  .tp-hero p {{ font-size: 1.08rem; color: #5a5368; margin: 0 0 .8rem 0; }}
+  .tp-chip {{ display: inline-block; background: #FCEBDD; color: {TEJA}; border: 1px solid #F1D2BD;
+             border-radius: 999px; padding: .2rem .7rem; margin: 0 .3rem .3rem 0; font-size: .85rem; font-weight: 600; }}
+  .tp-pasos {{ display: flex; gap: .5rem; margin: .6rem 0 1.2rem 0; }}
+  .tp-paso {{ flex: 1; text-align: center; padding: .55rem; border-radius: 12px; font-weight: 600;
+             background: #FCEBDD; color: #9a8f86; border: 1px solid #F1D2BD; }}
+  .tp-paso.activo {{ background: {TEJA}; color: {CREMA}; border-color: {TEJA}; }}
+  .tp-paso.hecho {{ background: #F7D9C9; color: {TEJA}; }}
+  div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 14px; background: #FFFDF9; }}
+  .stButton button, .stLinkButton a {{ border-radius: 999px; font-weight: 600; }}
+  div[data-testid="stMetricValue"] {{ color: {TEJA}; }}
+</style>
+""", unsafe_allow_html=True)
+
+if ss.paso == 1:
+    h_txt, h_img = st.columns([3, 2], gap="large", vertical_alignment="center")
+    with h_txt:
+        st.markdown("""
+<div class="tp-hero">
+  <h1>¿Compro o alquilo?<br><span>Te lo decimos con números.</span></h1>
+  <p>Tu asesora para decidir si comprar o seguir alquilando en Lima: avisos reales,
+  tasas en vivo del BCRP y un modelo financiero completo. Gratis y sin que nadie te quiera vender nada.</p>
+  <span class="tp-chip">🏘️ 96 avisos reales</span><span class="tp-chip">🏦 Tasas BCRP en vivo</span>
+  <span class="tp-chip">🗺️ 4 distritos</span><span class="tp-chip">⏱️ 1 minuto</span>
+</div>""", unsafe_allow_html=True)
+    with h_img:
+        st.image(str(ASSETS / "hero.svg"), use_container_width=True)
+
 pasos = ["① Dónde vivir", "② Tu depa", "③ Tu asesora"]
-st.progress(ss.paso / 3, text="   ·   ".join(f"**{p}**" if i + 1 == ss.paso else p for i, p in enumerate(pasos)))
+st.markdown('<div class="tp-pasos">' + "".join(
+    f'<div class="tp-paso {"activo" if i + 1 == ss.paso else "hecho" if i + 1 < ss.paso else ""}">{p}</div>'
+    for i, p in enumerate(pasos)) + "</div>", unsafe_allow_html=True)
 
 # ================================================================== PASO 1
 if ss.paso == 1:
@@ -115,7 +151,8 @@ if ss.paso == 1:
             elegido = d == ss.distrito
             folium.CircleMarker(
                 info["coord"], radius=fila["venta_m2_mediana"] / 250,
-                color="#e4572e" if elegido else "#2c7bb6", fill=True, fill_opacity=0.55,
+                color=TEJA if elegido else SALVIA, fill=True, fill_color=TEJA if elegido else AMBAR,
+                fill_opacity=0.6,
                 weight=4 if elegido else 2, tooltip=d,
                 popup=folium.Popup(f"<b>{d}</b><br>Venta: S/ {fila['venta_m2_mediana']:,.0f}/m²<br>"
                                    f"Alquiler: S/ {fila['alquiler_m2_mediana']:,.0f}/m² al mes", max_width=220),

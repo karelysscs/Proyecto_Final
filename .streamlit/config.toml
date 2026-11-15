@@ -1,0 +1,9 @@
+[theme]
+base = "light"
+primaryColor = "#D9583B"            # teja: el techito
+backgroundColor = "#FFF9F2"         # crema cálida
+secondaryBackgroundColor = "#FCEBDD"
+textColor = "#2E2A3A"
+font = "sans serif"
+headingFont = "serif"
+borderColor = "#F1D2BD"

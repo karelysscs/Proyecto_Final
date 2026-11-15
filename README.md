@@ -40,7 +40,12 @@ Soy la única founder. Cubro cada frente con agentes de IA:
 
 ## 4. Solución e insight
 
-**Qué construí:** una web app donde eliges distrito y tamaño, y en segundos ves:
+**Qué construí:** una web app con un recorrido guiado de 3 pasos:
+1. **¿Dónde quieres vivir?** Eliges el distrito en un mapa con precios reales.
+2. **Elige tu depa.** Escoges un aviso real en venta y lo comparas con el alquiler de uno parecido.
+3. **Tu asesora hipotecaria.** "Techi" te da el veredicto en un chat y responde preguntas como "¿y si sube la tasa?" o "¿cuántos años debo quedarme?", recalculando el modelo en vivo.
+
+En el camino ves:
 - **La recomendación** (comprar o alquilar) y la diferencia de patrimonio al final del horizonte.
 - **El alquiler de equilibrio:** cuánto tendría que costar el alquiler para que comprar convenga.
 - **Un mapa** que compara tu mismo caso en los 4 distritos.
