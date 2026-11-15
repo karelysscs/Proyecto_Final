@@ -1,7 +1,9 @@
 __pycache__/
 *.pyc
+.env
 .claude/hooks/.estado_fuentes.json
 .claude/settings.local.json
 data/*
 !data/.gitkeep
+!data/listings.csv
 .venv/
