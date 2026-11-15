@@ -81,7 +81,12 @@ En el camino ves:
   pip install -r requirements.txt
   streamlit run streamlit_app.py
   ```
-- **Capturas:** [docs/capturas/](docs/capturas/) _(pendiente)_
+- **Capturas del flujo principal** (app pública, 15/11/2026):
+
+| ① ¿Dónde quieres vivir? | ② Elige tu depa | ③ Tu asesora Techi |
+|---|---|---|
+| ![Paso 1: mapa de distritos](docs/capturas/1_donde_vivir.png) | ![Paso 2: avisos reales y comparación](docs/capturas/2_tu_depa.png) | ![Paso 3: asesora, ¿me alcanza? y viaje al futuro](docs/capturas/3_tu_asesora.png) |
+| Mapa nocturno con los 4 distritos y un adelanto del veredicto | Avisos reales de Urbania (o tu propio depa) frente al alquiler de uno parecido | Recomendación, "¿Me alcanza?" con tu sueldo, "Viaja al futuro" e informe descargable |
 - **Arquitectura:** [docs/arquitectura.md](docs/arquitectura.md)
 
 ```mermaid
