@@ -1,8 +1,8 @@
 {
   "_nota": "Valores referenciales para Lima a nov-2026. Verificar antes de usar en decisiones reales.",
   "busqueda": {
-    "max_fuentes": 10,
-    "max_busquedas": 5
+    "max_fuentes": 25,
+    "max_busquedas": 12
   },
   "tipo_cambio": 3.75,
   "uit": 5500,
