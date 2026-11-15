@@ -89,6 +89,55 @@ def soles(x):
     return f"S/ {x:,.0f}"
 
 
+LIMITE_CUOTA = 0.30  # referencia usual de los bancos: cuota / ingreso neto
+
+
+def informe_html(p, r, eq):
+    """Informe descargable (producto 'Informe Premium')."""
+    import html
+    import re
+
+    def md(t):
+        return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(t))
+
+    conversacion = "".join(
+        f"<p class='yo'>🙋 {md(m[4:])}</p>" if m.startswith("YO::") else f"<p class='techi'>🧑‍💼 {md(m)}</p>"
+        for m in ss.chat)
+    filas = [("Distrito", ss.distrito), ("Depa", ss.casa_desc), ("Precio", soles(p.precio_vivienda)),
+             ("Alquiler de uno parecido", soles(p.alquiler_mensual) + "/mes"),
+             ("Cuota inicial", f"{soles(r['cuota_inicial'])} ({p.cuota_inicial_pct:.0%})"),
+             ("Crédito", f"{soles(r['prestamo'])} a {p.plazo_anios} años, TEA {p.tea_hipoteca * 100:.2f} %"),
+             ("Cuota mensual", soles(r["cuota_mensual"])),
+             ("Gastos de cierre (incl. alcabala)", f"{soles(r['gastos_cierre'])} ({soles(r['alcabala'])})"),
+             ("Patrimonio final si compras", soles(r["patrimonio_comprador"])),
+             ("Patrimonio final si alquilas e inviertes", soles(r["patrimonio_inquilino"])),
+             ("Alquiler de equilibrio", soles(eq) + "/mes" if eq else "—"),
+             ("Años que vivirías ahí", str(p.horizonte_anios))]
+    tabla = "".join(f"<tr><td>{a}</td><td><b>{b}</b></td></tr>" for a, b in filas)
+    checklist = ["Cotiza la TEA en al menos 3 bancos y compara la TCEA (incluye seguros).",
+                 "Pide la partida registral del depa en SUNARP y verifica que no tenga cargas.",
+                 "Confirma si aplica alcabala (vivienda usada) o si es primera venta.",
+                 "Revisa si calificas al Bono MiVivienda o al Bono del Buen Pagador.",
+                 "Pregunta el mantenimiento mensual y el predial del depa.",
+                 "Guarda un fondo de emergencia de 3 a 6 cuotas antes de firmar."]
+    lista = "".join(f"<li>{c}</li>" for c in checklist)
+    veredicto = "COMPRAR" if r["recomendacion"] == "comprar" else "ALQUILAR e invertir la diferencia"
+    return f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Techito Propio · Informe {html.escape(ss.distrito)}</title>
+<style>body{{font-family:Georgia,serif;background:#FFF9F2;color:#2E2A3A;max-width:760px;margin:2rem auto;padding:0 1rem}}
+h1{{color:#D9583B;margin-bottom:0}}.v{{background:#D9583B;color:#FFF9F2;padding:.8rem 1rem;border-radius:12px;font-size:1.2rem}}
+table{{width:100%;border-collapse:collapse}}td{{padding:.4rem;border-bottom:1px solid #F1D2BD}}
+.techi{{background:#FCEBDD;padding:.6rem .8rem;border-radius:10px}}.yo{{text-align:right;color:#5a5368}}
+small{{color:#8a8296}}</style></head><body>
+<h1>🏠 Techito Propio</h1><small>Informe generado el {time.strftime('%d/%m/%Y')} · datos: Urbania (15/11/2026) y BCRP</small>
+<p class="v">Recomendación: <b>{veredicto}</b> en un horizonte de {p.horizonte_anios} años.</p>
+<h2>Tu caso en números</h2><table>{tabla}</table>
+<h2>Tu conversación con Techi</h2>{conversacion}
+<h2>Checklist antes de ir al banco</h2><ul>{lista}</ul>
+<p><small>Herramienta educativa con supuestos simplificados; no es asesoría financiera personalizada.
+Aviso del depa: {html.escape(ss.casa_url)}</small></p></body></html>"""
+
+
 def escribir(texto):
     """Efecto de 'escribiendo…' para los mensajes nuevos de la asesora."""
     for palabra in texto.split(" "):
@@ -261,9 +310,12 @@ elif ss.paso == 2:
             plazo = st.select_slider("Plazo", options=[10, 15, 20, 25, 30], value=20, format_func=lambda x: f"{x} años")
             tea = st.slider("Tasa (TEA)", 5.0, 15.0, round(TEA_BCRP * 100, 2), 0.05, format="%.2f %%",
                             help=f"Promedio de la banca según el BCRP ({ind['tea_hipoteca']['periodo']}).") / 100
+        ingreso = st.number_input("💼 Tu ingreso neto mensual (opcional)", 0, 300_000, int(ss.get("ingreso", 0)), 500,
+                                  help="Para decirte si el banco te prestaría y hasta qué precio te alcanza. No se guarda.")
         ss.update({"precio": float(casa["precio_pen"]), "area": area, "alquiler": float(alquiler),
                    "inicial": inicial, "plazo": plazo, "tea": tea, "horizonte": horizonte,
-                   "casa_url": casa["aviso"]})
+                   "casa_url": casa["aviso"], "ingreso": ingreso, "casa_desc":
+                   f"{area:.0f} m², {casa['dormitorios']} dorm., {casa['banos']} baños"})
         st.button("Ver qué me conviene →", type="primary", use_container_width=True, on_click=ir, args=(3,))
         st.button("← Cambiar distrito", use_container_width=True, on_click=ir, args=(1,))
 
@@ -307,7 +359,29 @@ else:
         if pregunta == "equilibrio":
             return (f"Comprar conviene si alquilar un depa así cuesta más de **{soles(eq)}/mes**. "
                     f"Hoy cuesta {soles(ss.alquiler)}." if eq else "No encontré un alquiler de equilibrio en un rango razonable.")
+        if pregunta == "sueldo":
+            return capacidad()
         return ""
+
+    def capacidad():
+        """¿Me alcanza? Regla referencial: la cuota no debería pasar ~30 % del ingreso neto."""
+        if not ss.ingreso:
+            return ("Para responderte necesito tu **ingreso neto mensual**: vuelve al paso anterior (← Cambiar depa) "
+                    "y escríbelo. No lo guardamos.")
+        ratio = r["cuota_mensual"] / ss.ingreso
+        tem = (1 + ss.tea) ** (1 / 12) - 1
+        prestamo_max = ss.ingreso * LIMITE_CUOTA * (1 - (1 + tem) ** -(ss.plazo * 12)) / tem
+        precio_max = prestamo_max / (1 - ss.inicial)
+        if ratio <= LIMITE_CUOTA:
+            veredicto = "✅ **Te alcanza.** Estás dentro de lo que suelen aceptar los bancos."
+        elif ratio <= 0.40:
+            veredicto = "⚠️ **Estás al límite.** Algunos bancos te pedirán más inicial o un codeudor."
+        else:
+            veredicto = "❌ **Hoy no te alcanza.** Es probable que el banco no apruebe este crédito."
+        return (f"La cuota de **{soles(r['cuota_mensual'])}** sería el **{ratio:.0%}** de tu ingreso "
+                f"({soles(ss.ingreso)}). Como referencia, los bancos suelen pedir que no pase de ~{LIMITE_CUOTA:.0%}. "
+                f"{veredicto} Con tu sueldo y {ss.inicial:.0%} de inicial, podrías apuntar a un depa de hasta "
+                f"**{soles(precio_max)}**.")
 
     if not ss.chat:
         motivo = sensibilidad(p)["tornado"][0]
@@ -322,6 +396,8 @@ else:
             f"más {soles(r['gastos_cierre'])} de gastos de cierre (incluye {soles(r['alcabala'])} de alcabala). "
             f"Lo que más mueve esta decisión es la **{NOMBRES.get(motivo['variable'], motivo['variable'])}**.",
         ]
+        if ss.ingreso:
+            ss.chat.append(capacidad())
         ss.animar = len(ss.chat)
 
     st.subheader(f"{ASESORA} Tu asesora hipotecaria")
@@ -338,8 +414,9 @@ else:
         st.caption("Pregúntale a Techi:")
         preguntas = {"💰 ¿Y si doy más inicial?": "inicial", "📈 ¿Y si sube la tasa 1 punto?": "tasa",
                      "⏳ ¿Cuántos años debo quedarme?": "anios", "🏚️ ¿Y si el depa no sube de precio?": "precio",
-                     "⚖️ ¿Qué alquiler haría que comprar convenga?": "equilibrio"}
-        fila1, fila2 = st.columns(3), st.columns(2)
+                     "⚖️ ¿Qué alquiler haría que comprar convenga?": "equilibrio",
+                     "🧾 ¿Me alcanza con mi sueldo?": "sueldo"}
+        fila1, fila2 = st.columns(3), st.columns(3)
         for (texto, clave), col in zip(preguntas.items(), list(fila1) + list(fila2)):
             if col.button(texto, key=f"q_{clave}", use_container_width=True):
                 ss.chat += ["YO::" + texto, respuesta(clave)]
@@ -353,7 +430,14 @@ else:
         serie.columns = ["Si compras", "Si alquilas e inviertes"]
         st.markdown("**Tu patrimonio año a año**")
         st.line_chart(serie, y_label="S/", x_label="Año", height=280)
-        st.link_button("Ver el aviso del depa elegido ↗", ss.casa_url)
+        st.link_button("Ver el aviso del depa elegido ↗", ss.casa_url, use_container_width=True)
+        with st.container(border=True):
+            st.markdown("**📄 Tu informe personal**  \n<span class='tp-mini'>Tu caso, los números clave, la "
+                        "conversación con Techi y un checklist para ir al banco. "
+                        "<b>Plan Premium: S/ 19</b> · gratis durante la demo.</span>", unsafe_allow_html=True)
+            st.download_button("Descargar mi informe", informe_html(p, r, eq),
+                               file_name=f"techito-propio-{ss.distrito.lower().replace(' ', '-')}.html",
+                               mime="text/html", type="primary", use_container_width=True)
 
     with st.expander("📋 Fuentes de los datos"):
         st.markdown(f"- Precios: {int(resumen.loc[ss.distrito, 'n_venta'])} avisos de venta y "

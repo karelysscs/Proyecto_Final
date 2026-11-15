@@ -54,6 +54,17 @@ En el camino ves:
 
 **Insight:** la pregunta correcta no es "¿la cuota es parecida al alquiler?", sino **"¿con cuánto patrimonio termino en N años en cada camino?"**. En Lima la respuesta **cambia por distrito**. Con los datos de hoy, un depa de 90 m² en **Surco conviene comprarlo** y uno similar en **San Miguel conviene alquilarlo**, porque allá el alquiler es barato frente al precio de venta (PER más alto). Ningún simulador de banco ni portal inmobiliario te muestra eso, porque su negocio es que compres.
 
+**Cómo evolucionó la idea:**
+
+| Versión inicial (4/11, ejercicio de clase) | Techito Propio (hoy) |
+|---|---|
+| Agente en la terminal, solo para quien sabe usar Claude Code | Web app pública en un recorrido de 3 pasos |
+| Formulario con 12 sliders técnicos | Eliges distrito en un mapa y un **depa real** de una lista |
+| Tasas escritas a mano en un JSON | **Tasas en vivo del API del BCRP** |
+| Un resultado estático | **Asesora "Techi"** que conversa y recalcula ante cada pregunta |
+| No sabías si el banco te prestaría | **"¿Me alcanza?"**: cuota frente a tu sueldo y precio máximo que puedes pagar |
+| Sin entregable | **Informe descargable** con checklist para ir al banco (el producto Premium) |
+
 ## 5. Why now
 
 - **Datos abiertos y en vivo:** el API del BCRP publica la TEA hipotecaria promedio (7.47 % en oct-2026) y las tasas de depósitos sin costo ni registro.
