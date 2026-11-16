@@ -125,11 +125,13 @@ flowchart LR
 
 | Herramienta | Sesión | Dónde está | Por qué |
 |---|---|---|---|
-| **Scraping y APIs** | 03 | `.claude/skills/peru-listings-search/`, `data/listings.csv` | Precios reales de venta y alquiler por distrito |
-| **API del BCRP** | 04 | `.claude/skills/buy-vs-rent/scripts/housing_lima/bcrp.py` | Tasas y tipo de cambio oficiales, en vivo |
-| **Dashboards** | 05 | `streamlit_app.py` | La app que usa el cliente |
-| **Mapas con Folium** | 06 | `streamlit_app.py` (pestaña "Mapa de distritos") | Comparar el mismo caso entre distritos |
-| **Agentes y skills de Claude Code** | 11, 16 | `.claude/agents/`, `.claude/skills/`, `.claude/hooks/limit_sources.py` | Agente que recolecta datos de mercado con un tope de fuentes |
+| **Geoespacial: mapa interactivo con Folium** | 6 | `streamlit_app.py` (paso 1, "¿Dónde te gustaría vivir?") | La decisión empieza por el lugar: el mapa muestra el precio por m² de cada distrito y lleva al usuario al paso 2 con un clic |
+| **Agentes: subagentes y skills de Claude Code** | 11 | `.claude/agents/`, `.claude/skills/`, `.claude/hooks/limit_sources.py` | Recolectar avisos y tasas es una tarea de varios pasos; los subagentes la repiten cada mes con un tope de fuentes |
+| Web scraping y APIs (BCRP) | 3 | `.claude/skills/peru-listings-search/`, `data/listings.csv`, `housing_lima/bcrp.py` | Precios reales de 96 avisos y tasas oficiales en vivo, no supuestos |
+| Dashboards con Streamlit | 5 | `streamlit_app.py` | La interfaz que usa el cliente |
+| Despliegue | 12 | Streamlit Community Cloud | URL pública, sin instalar nada |
+
+Las dos primeras son las herramientas de la lista del trabajo final (geoespacial y agentes); las otras son el resto del flujo de datos.
 
 ## 9. Qué hizo el agente
 
