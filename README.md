@@ -82,7 +82,7 @@ En el camino ves:
   pip install -r requirements.txt
   streamlit run streamlit_app.py
   ```
-- **Capturas del flujo principal** (app pública, 15/11/2026):
+- **Capturas del flujo principal** (app pública, 16/11/2026):
 
 | ① ¿Dónde quieres vivir? | ② Elige tu depa | ③ Tu asesora Techi |
 |---|---|---|
