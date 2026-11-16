@@ -56,7 +56,8 @@ def datos_bcrp():
 
 
 @st.cache_data
-def datos_mercado():
+def datos_mercado(version):
+    """`version` es la fecha de modificación del CSV: si cambian los datos, se invalida la caché."""
     filas, _ = lst.leer(LISTINGS)
     df = pd.DataFrame(filas)
     df["aviso"] = df["notas"].str.extract(r"aviso: (\S+?);")
@@ -65,7 +66,7 @@ def datos_mercado():
 
 
 ind = datos_bcrp()
-df, resumen = datos_mercado()
+df, resumen = datos_mercado(LISTINGS.stat().st_mtime)
 base = plantilla()
 TEA_BCRP = ind["tea_hipoteca"]["valor"]
 RENT_BCRP = ind["rentabilidad_alternativa"]["valor"]
@@ -253,7 +254,7 @@ def elegir_distrito(d):
 
 
 @st.cache_data
-def adelanto(d, tea, rent):
+def adelanto(d, tea, rent, version):
     """Veredicto de referencia por distrito: depa de 90 m², 20 % de inicial, 10 años."""
     fila = resumen.loc[d]
     pr = Perfil.desde_dict({**base, "uit": config()["uit"], "area_m2": 90, "tea_hipoteca": tea,
@@ -292,7 +293,7 @@ if ss.paso == 1:
             elegir_distrito(clic)
             st.rerun()
     with col_cards:
-        tarjetas = sorted(((d, *adelanto(d, TEA_BCRP, RENT_BCRP)) for d in DISTRITOS), key=lambda t: t[1])
+        tarjetas = sorted(((d, *adelanto(d, TEA_BCRP, RENT_BCRP, LISTINGS.stat().st_mtime)) for d in DISTRITOS), key=lambda t: t[1])
         st.markdown("<span class='tp-mini'>Depa de 90 m², del más accesible al más caro:</span>",
                     unsafe_allow_html=True)
         with st.container(height=440, border=False):
