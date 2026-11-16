@@ -12,7 +12,7 @@ flowchart TB
         B[bcrp.py<br/>API BCRP con caché de 6 h]
         M[model.py<br/>simulación mensual]
         A[analysis.py<br/>equilibrio y sensibilidad]
-        MAP[Folium<br/>mapa de 4 distritos]
+        MAP[Folium<br/>mapa de 9 distritos]
     end
     CSV --> L
     BCRP[(API BCRP<br/>PN07848NM · PN07815NM · PD04640PD)] --> B

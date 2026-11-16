@@ -13,7 +13,7 @@ inicial en un depósito. Equivocarte cuesta decenas de miles de soles. Por eso c
 **0:30–2:30 · Demo en vivo**
 
 1. **Paso 1, dónde vivir (20 s).** "Cada círculo del mapa es un distrito: su tamaño es el precio por m², calculado
-   con 96 avisos reales de Urbania. Las tarjetas ya me adelantan dónde suele convenir comprar y dónde alquilar.
+   con 216 avisos reales de Urbania en 9 distritos. Las tarjetas van del más accesible al más caro y me adelantan dónde suele convenir comprar y dónde alquilar.
    Elijo **Surco**."
 2. **Paso 2, mi depa (30 s).** "Estos son avisos reales en venta. Elijo este de **82 m² a S/ 391 mil**; con
    'Ver ↗' se abre el aviso real. Alquilar uno parecido cuesta **S/ 2,800 al mes**. La tasa, **7.47 %**, viene en
@@ -43,7 +43,7 @@ un LLM. Lo siguiente: más distritos y actualización automática semanal de pre
   cierre, seguros, mantenimiento y lo que rinde tu inicial invertida. El supuesto que más pesa es cuánto sube el
   depa (3 % al año). Si no subiera nada, en este caso comprar igual gana por S/ 33 mil; si todo sale mal —tasa
   9.5 %, sin apreciación fuerte— conviene alquilar. Por eso Techi te deja preguntar '¿y si el depa no sube?'."
-- **"¿De dónde salen los datos?"** "96 avisos de Urbania de esta semana (12 de venta y 12 de alquiler por distrito)
+- **"¿De dónde salen los datos?"** "216 avisos de Urbania de esta semana (12 de venta y 12 de alquiler en cada uno de los 9 distritos)
   y la API pública del BCRP para la tasa hipotecaria, los depósitos y el tipo de cambio."
 - **"¿Hablaste con usuarios?"** "Armé 3 perfiles de usuario, marcados como hipotéticos en el repo; el siguiente
   paso es validarlos con entrevistas reales."

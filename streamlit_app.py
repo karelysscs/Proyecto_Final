@@ -34,7 +34,13 @@ DISTRITOS = {
     "Santiago de Surco": {"coord": (-12.1459, -76.9918), "emoji": "🌳", "frase": "Residencial, parques y colegios"},
     "Jesús María": {"coord": (-12.0769, -77.0470), "emoji": "🏛️", "frase": "Céntrico, Campo de Marte y buena conexión"},
     "San Miguel": {"coord": (-12.0777, -77.0910), "emoji": "🛍️", "frase": "Familiar, cerca al mar y a centros comerciales"},
+    "Magdalena del Mar": {"coord": (-12.0908, -77.0710), "emoji": "⛵", "frase": "Costa Verde, céntrico y en crecimiento", "corto": "Magdalena"},
+    "Pueblo Libre": {"coord": (-12.0749, -77.0630), "emoji": "🏺", "frase": "Tranquilo, tradicional y con museos"},
+    "Lince": {"coord": (-12.0843, -77.0347), "emoji": "🚲", "frase": "Pequeño, céntrico y a pasos de San Isidro"},
+    "La Victoria": {"coord": (-12.0732, -77.0177), "emoji": "⚽", "frase": "Santa Catalina y Balconcillo, precio de entrada"},
+    "San Borja": {"coord": (-12.1010, -76.9990), "emoji": "🌿", "frase": "Arbolado, ordenado y con buenos colegios"},
 }
+DISTRITOS["Santiago de Surco"]["corto"] = "Surco"
 ASESORA = "🧑‍💼"
 
 st.set_page_config(page_title="Techito Propio · ¿Compro o alquilo?", page_icon=str(RAIZ / "assets" / "icono.svg"), layout="wide")
@@ -130,7 +136,7 @@ h1{{color:#D9583B;margin-bottom:0}}.v{{background:#D9583B;color:#FFF9F2;padding:
 table{{width:100%;border-collapse:collapse}}td{{padding:.4rem;border-bottom:1px solid #F1D2BD}}
 .techi{{background:#FCEBDD;padding:.6rem .8rem;border-radius:10px}}.yo{{text-align:right;color:#5a5368}}
 small{{color:#8a8296}}</style></head><body>
-<h1>🏠 Techito Propio</h1><small>Informe generado el {time.strftime('%d/%m/%Y')} · datos: Urbania (15/11/2026) y BCRP</small>
+<h1>🏠 Techito Propio</h1><small>Informe generado el {time.strftime('%d/%m/%Y')} · datos: Urbania (nov. 2026) y BCRP</small>
 <p class="v">Recomendación: <b>{veredicto}</b> en un horizonte de {p.horizonte_anios} años.</p>
 <h2>Tu caso en números</h2><table>{tabla}</table>
 <h2>Tu conversación con Techi</h2>{conversacion}
@@ -225,12 +231,12 @@ st.markdown(f"""
 </div>""", unsafe_allow_html=True)
 
 if ss.paso == 1:
-    st.markdown("""
+    st.markdown(f"""
 <div class="tp-hero">
   <h1>¿Compro o alquilo? <span>Te lo decimos con números.</span></h1>
   <p>Avisos reales, tasas en vivo del BCRP y un modelo financiero completo. Gratis, en 1 minuto
   y sin que nadie te quiera vender nada.</p>
-  <span class="tp-chip">🏘️ 96 avisos reales</span><span class="tp-chip">🏦 Tasas BCRP en vivo</span>
+  <span class="tp-chip">🏘️ {len(df)} avisos reales</span><span class="tp-chip">🏦 Tasas BCRP en vivo</span>
   <span class="tp-chip">🔓 Cálculo abierto</span>
 </div>""", unsafe_allow_html=True)
 
@@ -272,7 +278,7 @@ if ss.paso == 1:
             fila = resumen.loc[d]
             elegido = d == ss.distrito
             folium.CircleMarker(
-                info["coord"], radius=fila["venta_m2_mediana"] / 250,
+                info["coord"], radius=fila["venta_m2_mediana"] / 340,
                 color=AMBAR, fill=True, fill_color=TEJA, fill_opacity=0.55,
                 weight=3, tooltip=d,
                 popup=folium.Popup(f"<b>{d}</b><br>Venta: S/ {fila['venta_m2_mediana']:,.0f}/m²<br>"
@@ -286,20 +292,22 @@ if ss.paso == 1:
             elegir_distrito(clic)
             st.rerun()
     with col_cards:
-        cuadros = st.columns(2)
-        for i, (d, info) in enumerate(DISTRITOS.items()):
-            precio90, alq90, veredicto = adelanto(d, TEA_BCRP, RENT_BCRP)
-            with cuadros[i % 2].container(border=True):
-                st.markdown(f"**{info['emoji']} {d}**  \n<span class='tp-mini'>{info['frase']}</span>",
-                            unsafe_allow_html=True)
-                st.markdown(f"<div class='tp-mini'>Depa de 90 m²<br>Comprar <b>{soles(precio90)}</b><br>"
-                            f"Alquilar <b>{soles(alq90)}/mes</b></div>"
-                            f"<span class='tp-badge {veredicto}'>"
-                            f"{'✅ suele convenir COMPRAR' if veredicto == 'comprar' else '🔑 suele convenir ALQUILAR'}</span>",
-                            unsafe_allow_html=True)
-                corto = {"Santiago de Surco": "Surco"}.get(d, d)
-                st.button(f"Ver depas en {corto} →", key=f"btn_{d}", type="primary",
-                          use_container_width=True, on_click=elegir_distrito, args=(d,))
+        tarjetas = sorted(((d, *adelanto(d, TEA_BCRP, RENT_BCRP)) for d in DISTRITOS), key=lambda t: t[1])
+        st.markdown("<span class='tp-mini'>Depa de 90 m², del más accesible al más caro:</span>",
+                    unsafe_allow_html=True)
+        with st.container(height=440, border=False):
+            cuadros = st.columns(3)
+            for i, (d, precio90, alq90, veredicto) in enumerate(tarjetas):
+                info = DISTRITOS[d]
+                with cuadros[i % 3].container(border=True):
+                    st.markdown(f"**{info['emoji']} {info.get('corto', d)}**  \n"
+                                f"<div class='tp-mini'>Comprar <b>{soles(precio90)}</b><br>"
+                                f"Alquilar <b>{soles(alq90)}/mes</b></div>"
+                                f"<span class='tp-badge {veredicto}'>"
+                                f"{'✅ COMPRAR' if veredicto == 'comprar' else '🔑 ALQUILAR'}</span>",
+                                unsafe_allow_html=True)
+                    st.button("Ver depas →", key=f"btn_{d}", type="primary", help=info["frase"],
+                              use_container_width=True, on_click=elegir_distrito, args=(d,))
         st.caption("Referencia con 20 % de inicial, 10 años y la tasa promedio del BCRP. "
                    "En el siguiente paso lo ajustas a tu caso.")
 
@@ -531,7 +539,7 @@ else:
 
     with st.expander("📋 Fuentes de los datos"):
         st.markdown(f"- Precios: {int(resumen.loc[ss.distrito, 'n_venta'])} avisos de venta y "
-                    f"{int(resumen.loc[ss.distrito, 'n_alquiler'])} de alquiler en Urbania ({ss.distrito}, 15/11/2026).")
+                    f"{int(resumen.loc[ss.distrito, 'n_alquiler'])} de alquiler en Urbania ({ss.distrito}, nov. 2026).")
         for v in ind.values():
             valor = f"{v['valor']:.3f}" if v["nombre"].startswith("Tipo") else f"{v['valor'] * 100:.2f} %"
             estado = "en vivo" if v["en_vivo"] else "valor por defecto, el API no respondió"
@@ -543,7 +551,7 @@ else:
 
 st.markdown(f"""
 <div class="tp-confianza">
-  <div>📊 <b>Datos reales</b><br>96 avisos de Urbania (15/11/2026) y tasas del BCRP
+  <div>📊 <b>Datos reales</b><br>{len(df)} avisos de Urbania de {len(DISTRITOS)} distritos (nov. 2026) y tasas del BCRP
   ({ind['tea_hipoteca']['periodo']}).</div>
   <div>🔓 <b>Cálculo abierto</b><br>Cualquiera puede revisar el modelo en
   <a href="https://github.com/karelysscs/Proyecto_Final" target="_blank">GitHub</a>.</div>

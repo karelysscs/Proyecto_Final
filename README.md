@@ -24,7 +24,7 @@ Soy la única founder. Cubro cada frente con agentes de IA:
 
 ## 3. Problema
 
-**Quién lo sufre:** profesionales de 25 a 45 años que alquilan un departamento en distritos de Lima Moderna y Lima Centro (Miraflores, Surco, Jesús María, San Miguel), con ahorros para una cuota inicial y una oferta de crédito hipotecario en la mano.
+**Quién lo sufre:** profesionales de 25 a 45 años que alquilan un departamento en distritos de Lima Moderna y Lima Centro (Miraflores, Surco, San Borja, Jesús María, San Miguel, Magdalena, Pueblo Libre, Lince y La Victoria), con ahorros para una cuota inicial y una oferta de crédito hipotecario en la mano.
 
 **Cuánto les cuesta:** es la decisión financiera más grande de su vida. En un depa de 90 m² en Surco (~S/ 546,000), equivocarse puede significar **más de S/ 70,000 de patrimonio** en 10 años (ver la demo). Además:
 - Pagan costos que no sabían que existían: alcabala (3 % sobre el exceso de 10 UIT), gastos de cierre, seguros, predial y mantenimiento.
@@ -48,7 +48,7 @@ Soy la única founder. Cubro cada frente con agentes de IA:
 En el camino ves:
 - **La recomendación** (comprar o alquilar) y la diferencia de patrimonio al final del horizonte.
 - **El alquiler de equilibrio:** cuánto tendría que costar el alquiler para que comprar convenga.
-- **Un mapa** que compara tu mismo caso en los 4 distritos.
+- **Un mapa** que compara tu mismo caso en 9 distritos, ordenados del más accesible al más caro.
 - **Qué supuesto pesa más** (análisis de sensibilidad).
 - **Los avisos reales** usados como fuente, con enlace a cada uno.
 
@@ -66,6 +66,7 @@ En el camino ves:
 | Sin entregable | **Informe descargable** con checklist para ir al banco (el producto Premium) |
 | Solo el perfil de ejemplo | **"Tengo mi propio depa"**: pones precio (S/ o US$), m² y si es de estreno, y te dice si está caro frente al distrito |
 | Un número final | **"Viaja al futuro"**: eliges un año y ves tu patrimonio en cada camino |
+| 4 distritos caros | **9 distritos**, incluidos los medianamente accesibles (Pueblo Libre, Lince, La Victoria, Magdalena), **ordenados del más accesible al más caro** |
 
 ## 5. Why now
 
@@ -86,7 +87,7 @@ En el camino ves:
 | ① ¿Dónde quieres vivir? | ② Elige tu depa | ③ Tu asesora Techi |
 |---|---|---|
 | ![Paso 1: mapa de distritos](docs/capturas/1_donde_vivir.png) | ![Paso 2: avisos reales y comparación](docs/capturas/2_tu_depa.png) | ![Paso 3: asesora, ¿me alcanza? y viaje al futuro](docs/capturas/3_tu_asesora.png) |
-| Mapa nocturno con los 4 distritos y un adelanto del veredicto | Avisos reales de Urbania (o tu propio depa) frente al alquiler de uno parecido | Recomendación, "¿Me alcanza?" con tu sueldo, "Viaja al futuro" e informe descargable |
+| Mapa nocturno con 9 distritos y un adelanto del veredicto | Avisos reales de Urbania (o tu propio depa) frente al alquiler de uno parecido | Recomendación, "¿Me alcanza?" con tu sueldo, "Viaja al futuro" e informe descargable |
 - **Arquitectura:** [docs/arquitectura.md](docs/arquitectura.md)
 
 ```mermaid
@@ -127,7 +128,7 @@ flowchart LR
 |---|---|---|---|
 | **Geoespacial: mapa interactivo con Folium** | 6 | `streamlit_app.py` (paso 1, "¿Dónde te gustaría vivir?") | La decisión empieza por el lugar: el mapa muestra el precio por m² de cada distrito y lleva al usuario al paso 2 con un clic |
 | **Agentes: subagentes y skills de Claude Code** | 11 | `.claude/agents/`, `.claude/skills/`, `.claude/hooks/limit_sources.py` | Recolectar avisos y tasas es una tarea de varios pasos; los subagentes la repiten cada mes con un tope de fuentes |
-| Web scraping y APIs (BCRP) | 3 | `.claude/skills/peru-listings-search/`, `data/listings.csv`, `housing_lima/bcrp.py` | Precios reales de 96 avisos y tasas oficiales en vivo, no supuestos |
+| Web scraping y APIs (BCRP) | 3 | `.claude/skills/peru-listings-search/`, `data/listings.csv`, `housing_lima/bcrp.py` | Precios reales de 216 avisos y tasas oficiales en vivo, no supuestos |
 | Dashboards con Streamlit | 5 | `streamlit_app.py` | La interfaz que usa el cliente |
 | Despliegue | 12 | Streamlit Community Cloud | URL pública, sin instalar nada |
 
@@ -137,7 +138,7 @@ Las dos primeras son las herramientas de la lista del trabajo final (geoespacial
 
 Usé **Claude Code** como co-founder técnico:
 - **Generó** el motor financiero (`housing_lima/`), los skills, los subagentes y el hook que limita las fuentes.
-- **Recolectó** los 96 avisos de Urbania con el navegador integrado y los normalizó en `data/listings.csv`.
+- **Recolectó** los 216 avisos de Urbania (9 distritos) con el navegador integrado y los normalizó en `data/listings.csv`.
 - **Encontró y conectó** las series del API del BCRP (`bcrp.py`).
 - **Escribió** `streamlit_app.py` con el mapa, la configuración de despliegue y este README.
 - **Yo** definí el problema, los distritos, los supuestos del modelo y el modelo de negocio, y revisé que los números tuvieran sentido.
@@ -150,7 +151,7 @@ Usé **Claude Code** como co-founder técnico:
 Proyecto_Final/
 ├── streamlit_app.py              app pública (Streamlit Community Cloud)
 ├── requirements.txt
-├── data/listings.csv             96 avisos reales (Urbania, 15/11/2026)
+├── data/listings.csv             216 avisos reales (Urbania, 15–16/11/2026)
 ├── docs/                         arquitectura, capturas, research/
 ├── .claude/
 │   ├── skills/buy-vs-rent/scripts/housing_lima/   motor: model, analysis, bcrp, listings, explain

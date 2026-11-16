@@ -5,12 +5,16 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 APP = str(Path(__file__).resolve().parents[1] / "streamlit_app.py")
-DISTRITOS = ["Miraflores", "Santiago de Surco", "Jesús María", "San Miguel"]
-CORTO = {"Santiago de Surco": "Surco"}
+DISTRITOS = ["Miraflores", "Santiago de Surco", "Jesús María", "San Miguel",
+             "Magdalena del Mar", "Pueblo Libre", "Lince", "La Victoria", "San Borja"]
 
 
 def boton(at, texto):
     return next(b for b in at.button if b.label == texto)
+
+
+def distrito(at, d):
+    return next(b for b in at.button if b.key == f"btn_{d}")
 
 
 def iniciar():
@@ -25,10 +29,10 @@ def test_portada():
     assert "Techito" in html and "¿Compro o alquilo?" in html
 
 
-@pytest.mark.parametrize("distrito", DISTRITOS)
-def test_recorrido_por_distrito(distrito):
+@pytest.mark.parametrize("distrito_", DISTRITOS)
+def test_recorrido_por_distrito(distrito_):
     at = iniciar()
-    boton(at, f"Ver depas en {CORTO.get(distrito, distrito)} →").click().run()
+    distrito(at, distrito_).click().run()
     assert not at.exception
     assert at.session_state.paso == 2
     boton(at, "Ver qué me conviene →").click().run()
@@ -40,7 +44,7 @@ def test_recorrido_por_distrito(distrito):
 
 def test_preguntas_a_techi():
     at = iniciar()
-    boton(at, "Ver depas en Surco →").click().run()
+    distrito(at, "Santiago de Surco").click().run()
     boton(at, "Ver qué me conviene →").click().run()
     for b in [b for b in at.button if b.key and b.key.startswith("q_")]:
         b.click().run()
@@ -49,7 +53,7 @@ def test_preguntas_a_techi():
 
 def test_depa_propio_en_dolares():
     at = iniciar()
-    boton(at, "Ver depas en San Miguel →").click().run()
+    distrito(at, "San Miguel").click().run()
     at.session_state.modo_depa = "✍️ Tengo mi propio depa"
     at.run()
     at.number_input(key="mi_monto").set_value(120_000).run()
