@@ -2,7 +2,7 @@
 
 > **Ayudamos a quienes alquilan en Lima a decidir si les conviene comprar o seguir alquilando, con precios reales del mercado, tasas en vivo del BCRP y un modelo financiero completo.**
 
-**Demo:** https://techito-propio.streamlit.app · **Video de respaldo:** _[pendiente: link al video de 60–90 s]_
+**Demo:** https://techito-propio.streamlit.app · **Video de respaldo:** _[pendiente: link al video]_
 
 ---
 
