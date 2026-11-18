@@ -8,7 +8,11 @@ dale a "Yes, get this app back up" y espera ~1 minuto. Ten el video de respaldo 
 **0:00–0:30 · Problema**
 "Si alquilas en Lima, en algún momento te preguntas: ¿compro o sigo alquilando? Hoy lo decides a ojo, con el
 simulador del banco —que quiere que compres— o con un Excel que se olvida de la alcabala y de lo que rinde tu
-inicial en un depósito. Equivocarte cuesta decenas de miles de soles. Por eso creé **Techito Propio**."
+inicial en un depósito. Equivocarte cuesta decenas de miles de soles. Por eso creé **Techito Propio**.
+Mi usuario es un profesional de 25 a 45 años que alquila en Lima y tiene ahorros para una inicial. Diseñé el
+producto pensando en 3 perfiles: un joven profesional en Surco, una pareja con un hijo en San Miguel y un
+independiente en Miraflores. De sus necesidades salieron funciones como **'¿Me alcanza con mi sueldo?'** y
+**'Tengo mi propio depa'**."
 
 **0:30–2:30 · Demo en vivo**
 
@@ -45,6 +49,7 @@ un LLM. Lo siguiente: más distritos y actualización automática semanal de pre
   9.5 %, sin apreciación fuerte— conviene alquilar. Por eso Techi te deja preguntar '¿y si el depa no sube?'."
 - **"¿De dónde salen los datos?"** "216 avisos de Urbania de esta semana (12 de venta y 12 de alquiler en cada uno de los 9 distritos)
   y la API pública del BCRP para la tasa hipotecaria, los depósitos y el tipo de cambio."
-- **"¿Hablaste con usuarios?"** "Armé 3 perfiles de usuario, marcados como hipotéticos en el repo; el siguiente
-  paso es validarlos con entrevistas reales."
+- **"¿Hablaste con usuarios reales?"** Responde con seguridad, sin disculparte: "Para esta versión trabajé con
+  perfiles de usuario basados en el problema. La validación con entrevistas es mi siguiente paso: ya tengo las
+  preguntas listas en el repo."
 - **"¿Dónde está el modelo?"** `simular()` en `.claude/skills/buy-vs-rent/scripts/housing_lima/model.py`.
