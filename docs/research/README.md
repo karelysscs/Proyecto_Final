@@ -22,3 +22,14 @@
 3. **La fuente de consejo tiene conflicto de interés:** el banco y la inmobiliaria ganan si compras.
 4. **Disposición a pagar baja para el usuario final** → el modelo de negocio debe apoyarse en
    bancos/inmobiliarias (leads calificados) o en un informe premium de bajo precio.
+
+## Guía de entrevista para la validación
+Para conversar 10–15 minutos (en persona o por WhatsApp) con alguien que encaje en cada perfil:
+
+1. ¿Alquilas actualmente? ¿Cuánto pagas y en qué distrito?
+2. ¿Has pensado en comprar? ¿Qué te frena?
+3. La última vez que lo pensaste, ¿cómo hiciste la cuenta? (banco, Excel, familia, a ojo)
+4. ¿Sabías de la alcabala y de lo que rinde tu inicial en un depósito si no compras?
+5. ¿Qué te haría confiar en una recomendación de "compra" o "alquila"?
+6. ¿Pagarías S/ 19 por un informe con tu caso para llevar al banco? ¿Por qué sí o no?
+7. Después de usar Techito Propio: ¿qué entendiste? ¿qué te faltó?
