@@ -9,6 +9,8 @@ dale a "Yes, get this app back up" y espera ~1 minuto. Ten el video de respaldo 
 "Si alquilas en Lima, en algún momento te preguntas: ¿compro o sigo alquilando? Hoy lo decides a ojo, con el
 simulador del banco —que quiere que compres— o con un Excel que se olvida de la alcabala y de lo que rinde tu
 inicial en un depósito. Equivocarte cuesta decenas de miles de soles. Por eso creé **Techito Propio**.
+Es una propuesta de mejora del ejercicio que hicimos en clase con **skills y agentes de Claude Code**: allá era un
+agente que solo corría en la terminal; aquí lo convertí en una app pública que cualquiera puede usar.
 Mi usuario es un profesional de 25 a 45 años que alquila en Lima y tiene ahorros para una inicial. Diseñé el
 producto pensando en 3 perfiles: un joven profesional en Surco, una pareja con un hijo en San Miguel y un
 independiente en Miraflores. De sus necesidades salieron funciones como **'¿Me alcanza con mi sueldo?'** y

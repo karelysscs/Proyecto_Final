@@ -54,7 +54,7 @@ En el camino ves:
 
 **Insight:** la pregunta correcta no es "¿la cuota es parecida al alquiler?", sino **"¿con cuánto patrimonio termino en N años en cada camino?"**. En Lima la respuesta **cambia por distrito**. Con los datos de hoy, un depa de 90 m² en **Surco conviene comprarlo** y uno similar en **San Miguel conviene alquilarlo**, porque allá el alquiler es barato frente al precio de venta (PER más alto). Ningún simulador de banco ni portal inmobiliario te muestra eso, porque su negocio es que compres.
 
-**Cómo evolucionó la idea:**
+**Cómo evolucionó la idea:** Techito Propio es una propuesta de mejora del ejercicio de clase sobre **skills y agentes de Claude Code** (sesión 11). Ese ejercicio era un agente con skills que corría solo en la terminal; este proyecto lo convierte en un producto público.
 
 | Versión inicial (4/11, ejercicio de clase) | Techito Propio (hoy) |
 |---|---|
